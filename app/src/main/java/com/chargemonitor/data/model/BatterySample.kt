@@ -5,6 +5,7 @@ data class BatterySample(
     val currentMicroAmps: Int?,
     val levelPercent: Int?,
     val isCharging: Boolean,
+    val isFull: Boolean,
     val isPlugged: Boolean,
     val capturedAtMillis: Long,
 )

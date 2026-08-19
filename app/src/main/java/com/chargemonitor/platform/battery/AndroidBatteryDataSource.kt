@@ -21,6 +21,7 @@ class AndroidBatteryDataSource(private val context: Context) : BatteryDataSource
             currentMicroAmps = rawCurrent.takeIf { it != Int.MIN_VALUE },
             levelPercent = intent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)?.takeIf { it in 0..100 },
             isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING,
+            isFull = status == BatteryManager.BATTERY_STATUS_FULL,
             isPlugged = plugged != 0,
             capturedAtMillis = System.currentTimeMillis(),
         )

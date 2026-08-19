@@ -3,6 +3,7 @@ package com.chargemonitor.data.model
 enum class MonitorStatus {
     DISABLED,
     IDLE,
+    FULL,
     CHARGING,
     MEASUREMENT_UNAVAILABLE,
 }
