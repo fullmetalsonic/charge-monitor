@@ -92,7 +92,7 @@ private fun DashboardContent(
             Column {
                 Text("자동 모니터링", style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.height(5.dp))
-                Text("충전 시 알림과 AOD에 표시", color = Muted, style = MaterialTheme.typography.bodyMedium)
+                Text("충전·방전 상태를 알림으로 표시", color = Muted, style = MaterialTheme.typography.bodyMedium)
             }
             Switch(checked = enabled, onCheckedChange = onEnabledChange)
         }
