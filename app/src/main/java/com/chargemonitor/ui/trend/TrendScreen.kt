@@ -44,6 +44,7 @@ import com.chargemonitor.R
 import com.chargemonitor.data.model.DailyTrendSummary
 import com.chargemonitor.data.model.TrendDirection
 import com.chargemonitor.data.model.TrendRecord
+import com.chargemonitor.domain.TrendTimeline
 import com.chargemonitor.ui.design.Divider
 import com.chargemonitor.ui.design.GaugeTrack
 import com.chargemonitor.ui.design.Ink
@@ -93,6 +94,8 @@ private fun TrendContent(
             Surface(color = SlateSurface, shape = RoundedCornerShape(24.dp)) {
                 Column(Modifier.padding(16.dp)) {
                     BatteryFlowChart(summary.records)
+                    Spacer(Modifier.height(4.dp))
+                    DayTimelineLabels()
                     Spacer(Modifier.height(10.dp))
                     Legend()
                 }
@@ -134,8 +137,8 @@ private fun DateStrip(
                     onHorizontalDrag = { _, dragAmount -> totalDrag += dragAmount },
                     onDragEnd = {
                         when {
-                            totalDrag <= -SWIPE_THRESHOLD -> onShowPreviousDay()
-                            totalDrag >= SWIPE_THRESHOLD -> onShowNextDay()
+                            totalDrag <= -SWIPE_THRESHOLD -> onShowNextDay()
+                            totalDrag >= SWIPE_THRESHOLD -> onShowPreviousDay()
                         }
                         totalDrag = 0f
                     },
@@ -168,6 +171,7 @@ private fun DateStrip(
 }
 
 private const val SWIPE_THRESHOLD = 72f
+private const val DAILY_BUCKET_COUNT = 288f
 
 @Composable
 private fun EmptyTrendState() {
@@ -185,19 +189,14 @@ private fun EmptyTrendState() {
 @Composable
 private fun BatteryFlowChart(records: List<TrendRecord>) {
     Canvas(Modifier.fillMaxWidth().height(250.dp)) {
-        val widthStep = size.width / max(records.size - 1, 1)
         val bottom = size.height - 18.dp.toPx()
         val chartHeight = bottom - 12.dp.toPx()
-        records.forEachIndexed { index, record ->
-            val x = index * widthStep
+        val strokeWidth = max(2.dp.toPx(), size.width / DAILY_BUCKET_COUNT * 0.55f)
+        records.forEach { record ->
+            val x = size.width * TrendTimeline.dayFraction(record.capturedAtMillis)
             val y = bottom - chartHeight * record.batteryPercent / 100f
             val color = if (record.direction == TrendDirection.CHARGING) Lime else GaugeTrack
-            drawLine(color, Offset(x, bottom), Offset(x, y), strokeWidth = max(2.dp.toPx(), widthStep * 0.55f), cap = StrokeCap.Round)
-        }
-        records.zipWithNext().forEachIndexed { index, (previous, current) ->
-            val start = Offset(index * widthStep, bottom - chartHeight * previous.batteryPercent / 100f)
-            val end = Offset((index + 1) * widthStep, bottom - chartHeight * current.batteryPercent / 100f)
-            drawLine(Lime, start, end, strokeWidth = 2.dp.toPx(), cap = StrokeCap.Round)
+            drawLine(color, Offset(x, bottom), Offset(x, y), strokeWidth = strokeWidth, cap = StrokeCap.Round)
         }
     }
 }
@@ -213,15 +212,26 @@ private fun PowerChart(records: List<TrendRecord>, peakWatts: Double?) {
         Canvas(Modifier.fillMaxWidth().height(150.dp).background(SlateSurface, RoundedCornerShape(20.dp))) {
             val values = records.map { it.powerWatts ?: 0.0 }
             val scaleMax = max(30.0, values.maxOrNull() ?: 0.0)
-            val widthStep = size.width / max(records.size - 1, 1)
             val bottom = size.height - 14.dp.toPx()
             val chartHeight = bottom - 12.dp.toPx()
+            val strokeWidth = max(2.dp.toPx(), size.width / DAILY_BUCKET_COUNT * 0.55f)
             values.forEachIndexed { index, value ->
-                val x = index * widthStep
+                val x = size.width * TrendTimeline.dayFraction(records[index].capturedAtMillis)
                 val y = bottom - (value / scaleMax * chartHeight).toFloat()
                 val color = if (records[index].direction == TrendDirection.CHARGING) Lime else GaugeTrack
-                drawLine(color, Offset(x, bottom), Offset(x, y), strokeWidth = max(2.dp.toPx(), widthStep * 0.55f), cap = StrokeCap.Round)
+                drawLine(color, Offset(x, bottom), Offset(x, y), strokeWidth = strokeWidth, cap = StrokeCap.Round)
             }
+        }
+        Spacer(Modifier.height(4.dp))
+        DayTimelineLabels()
+    }
+}
+
+@Composable
+private fun DayTimelineLabels() {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        listOf("00", "06", "12", "18", "24").forEach { hour ->
+            Text(hour, color = Muted, style = MaterialTheme.typography.bodySmall)
         }
     }
 }

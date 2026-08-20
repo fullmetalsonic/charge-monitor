@@ -19,6 +19,8 @@ class SettingsRepository(context: Context) {
         _autoMonitoringEnabled.value = enabled
     }
 
+    fun isAutoMonitoringEnabled(): Boolean = preferences.getBoolean(KEY_AUTO_MONITORING, false)
+
     fun setStatusBarWattEnabled(enabled: Boolean) {
         preferences.edit().putBoolean(KEY_STATUS_BAR_WATT, enabled).apply()
         _statusBarWattEnabled.value = enabled
