@@ -3,7 +3,7 @@ package com.chargemonitor.ui.trend
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,11 +25,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -55,11 +59,21 @@ import kotlin.math.max
 @Composable
 fun TrendScreen(viewModel: TrendViewModel) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    TrendContent(state = state, onSelectDate = viewModel::selectDate)
+    TrendContent(
+        state = state,
+        onSelectDate = viewModel::selectDate,
+        onShowPreviousDay = viewModel::showPreviousDay,
+        onShowNextDay = viewModel::showNextDay,
+    )
 }
 
 @Composable
-private fun TrendContent(state: TrendUiState, onSelectDate: (LocalDate) -> Unit) {
+private fun TrendContent(
+    state: TrendUiState,
+    onSelectDate: (LocalDate) -> Unit,
+    onShowPreviousDay: () -> Unit,
+    onShowNextDay: () -> Unit,
+) {
     val summary = state.summary
     Column(
         modifier = Modifier
@@ -69,7 +83,7 @@ private fun TrendContent(state: TrendUiState, onSelectDate: (LocalDate) -> Unit)
     ) {
         Text(stringResource(R.string.trend_history), style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(20.dp))
-        DateStrip(state.recentDates, state.selectedDate, onSelectDate)
+        DateStrip(state.recentDates, state.selectedDate, onSelectDate, onShowPreviousDay, onShowNextDay)
         Spacer(Modifier.height(26.dp))
         Text(stringResource(R.string.battery_flow), style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(12.dp))
@@ -104,9 +118,30 @@ private fun TrendContent(state: TrendUiState, onSelectDate: (LocalDate) -> Unit)
 }
 
 @Composable
-private fun DateStrip(dates: List<LocalDate>, selectedDate: LocalDate, onSelectDate: (LocalDate) -> Unit) {
+private fun DateStrip(
+    dates: List<LocalDate>,
+    selectedDate: LocalDate,
+    onSelectDate: (LocalDate) -> Unit,
+    onShowPreviousDay: () -> Unit,
+    onShowNextDay: () -> Unit,
+) {
+    var totalDrag by remember { mutableStateOf(0f) }
     Row(
-        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+        modifier = Modifier
+            .fillMaxWidth()
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures(
+                    onHorizontalDrag = { _, dragAmount -> totalDrag += dragAmount },
+                    onDragEnd = {
+                        when {
+                            totalDrag <= -SWIPE_THRESHOLD -> onShowPreviousDay()
+                            totalDrag >= SWIPE_THRESHOLD -> onShowNextDay()
+                        }
+                        totalDrag = 0f
+                    },
+                    onDragCancel = { totalDrag = 0f },
+                )
+            },
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         dates.forEach { date ->
@@ -131,6 +166,8 @@ private fun DateStrip(dates: List<LocalDate>, selectedDate: LocalDate, onSelectD
         }
     }
 }
+
+private const val SWIPE_THRESHOLD = 72f
 
 @Composable
 private fun EmptyTrendState() {

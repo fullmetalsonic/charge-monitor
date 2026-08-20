@@ -25,11 +25,12 @@ class TrendViewModel(
     private val buildDailyTrendSummary: BuildDailyTrendSummary = BuildDailyTrendSummary(),
 ) : ViewModel() {
     private val selectedDate = MutableStateFlow(LocalDate.now())
+    private val visibleEndDate = MutableStateFlow(LocalDate.now())
 
-    val uiState = combine(historyRepository.records, selectedDate) { records, date ->
+    val uiState = combine(historyRepository.records, selectedDate, visibleEndDate) { records, date, endDate ->
         TrendUiState(
             selectedDate = date,
-            recentDates = (6 downTo 0).map { date.minusDays(it.toLong()) },
+            recentDates = (6 downTo 0).map { endDate.minusDays(it.toLong()) },
             summary = buildDailyTrendSummary(records, date),
         )
     }.stateIn(
@@ -46,7 +47,20 @@ class TrendViewModel(
         selectedDate.value = date
     }
 
+    fun showPreviousDay() {
+        val endDate = visibleEndDate.value.minusDays(DAYS_PER_SWIPE)
+        visibleEndDate.value = endDate
+        selectedDate.value = endDate
+    }
+
+    fun showNextDay() {
+        val endDate = minOf(visibleEndDate.value.plusDays(DAYS_PER_SWIPE), LocalDate.now())
+        visibleEndDate.value = endDate
+        selectedDate.value = endDate
+    }
+
     companion object {
+        private const val DAYS_PER_SWIPE = 1L
         fun factory(historyRepository: TrendHistoryRepository): ViewModelProvider.Factory = viewModelFactory {
             initializer { TrendViewModel(historyRepository) }
         }

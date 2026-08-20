@@ -146,14 +146,14 @@ private fun DashboardContent(
             )
         }
         Text(
-            text = "${stringResource(R.string.diagnostics)}  ›",
-            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp).clickable(onClick = onOpenDiagnostic),
+            text = "${stringResource(R.string.trend_history)}  ›",
+            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp).clickable(onClick = onOpenTrend),
             color = Muted,
             style = MaterialTheme.typography.titleMedium,
         )
         Text(
-            text = "${stringResource(R.string.trend_history)}  ›",
-            modifier = Modifier.padding(top = 8.dp, bottom = 20.dp).clickable(onClick = onOpenTrend),
+            text = "${stringResource(R.string.diagnostics)}  ›",
+            modifier = Modifier.padding(top = 8.dp, bottom = 20.dp).clickable(onClick = onOpenDiagnostic),
             color = Muted,
             style = MaterialTheme.typography.titleMedium,
         )
