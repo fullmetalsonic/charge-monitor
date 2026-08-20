@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BatteryChargingFull
 import androidx.compose.material3.HorizontalDivider
@@ -46,17 +48,21 @@ import com.chargemonitor.ui.design.Muted
 import com.chargemonitor.util.PowerFormatter
 
 @Composable
-fun DashboardScreen(viewModel: DashboardViewModel, onOpenDiagnostic: () -> Unit) {
+fun DashboardScreen(viewModel: DashboardViewModel, onOpenDiagnostic: () -> Unit, onOpenTrend: () -> Unit) {
     val reading by viewModel.reading.collectAsStateWithLifecycle()
     val enabled by viewModel.autoMonitoringEnabled.collectAsStateWithLifecycle()
     val statusBarWattEnabled by viewModel.statusBarWattEnabled.collectAsStateWithLifecycle()
+    val trendRecordingEnabled by viewModel.trendRecordingEnabled.collectAsStateWithLifecycle()
     DashboardContent(
         reading = reading,
         enabled = enabled,
         onEnabledChange = viewModel::setAutoMonitoringEnabled,
         statusBarWattEnabled = statusBarWattEnabled,
         onStatusBarWattEnabledChange = viewModel::setStatusBarWattEnabled,
+        trendRecordingEnabled = trendRecordingEnabled,
+        onTrendRecordingEnabledChange = viewModel::setTrendRecordingEnabled,
         onOpenDiagnostic = onOpenDiagnostic,
+        onOpenTrend = onOpenTrend,
     )
 }
 
@@ -67,13 +73,17 @@ private fun DashboardContent(
     onEnabledChange: (Boolean) -> Unit,
     statusBarWattEnabled: Boolean,
     onStatusBarWattEnabledChange: (Boolean) -> Unit,
+    trendRecordingEnabled: Boolean,
+    onTrendRecordingEnabledChange: (Boolean) -> Unit,
     onOpenDiagnostic: () -> Unit,
+    onOpenTrend: () -> Unit,
 ) {
     val sample = reading.sample
     Column(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 28.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -119,9 +129,31 @@ private fun DashboardContent(
                 onCheckedChange = onStatusBarWattEnabledChange,
             )
         }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.trend_recording), style = MaterialTheme.typography.titleMedium)
+                Spacer(Modifier.height(5.dp))
+                Text(stringResource(R.string.trend_recording_description), color = Muted, style = MaterialTheme.typography.bodyMedium)
+            }
+            Switch(
+                checked = trendRecordingEnabled,
+                onCheckedChange = onTrendRecordingEnabledChange,
+            )
+        }
         Text(
             text = "${stringResource(R.string.diagnostics)}  ›",
             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp).clickable(onClick = onOpenDiagnostic),
+            color = Muted,
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text(
+            text = "${stringResource(R.string.trend_history)}  ›",
+            modifier = Modifier.padding(top = 8.dp, bottom = 20.dp).clickable(onClick = onOpenTrend),
             color = Muted,
             style = MaterialTheme.typography.titleMedium,
         )

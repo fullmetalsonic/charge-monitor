@@ -18,6 +18,8 @@ import com.chargemonitor.ui.dashboard.DashboardScreen
 import com.chargemonitor.ui.dashboard.DashboardViewModel
 import com.chargemonitor.ui.design.ChargeMonitorTheme
 import com.chargemonitor.ui.diagnostic.DiagnosticScreen
+import com.chargemonitor.ui.trend.TrendScreen
+import com.chargemonitor.ui.trend.TrendViewModel
 
 class MainActivity : ComponentActivity() {
     private val container by lazy { (application as ChargeMonitorApplication).container }
@@ -30,23 +32,34 @@ class MainActivity : ComponentActivity() {
         )
     }
     private val requestNotifications = registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    private val trendViewModel: TrendViewModel by viewModels {
+        TrendViewModel.factory(container.trendHistoryRepository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
         setContent {
-            var diagnosticOpen by mutableStateOf(false)
+            var screen by mutableStateOf(Screen.DASHBOARD)
             ChargeMonitorTheme {
                 Surface {
-                    BackHandler(enabled = diagnosticOpen) { diagnosticOpen = false }
-                    if (diagnosticOpen) {
-                        val reading by viewModel.reading.collectAsStateWithLifecycle()
-                        DiagnosticScreen(reading)
-                    } else {
-                        DashboardScreen(viewModel, onOpenDiagnostic = { diagnosticOpen = true })
+                    BackHandler(enabled = screen != Screen.DASHBOARD) { screen = Screen.DASHBOARD }
+                    when (screen) {
+                        Screen.DASHBOARD -> DashboardScreen(
+                            viewModel,
+                            onOpenDiagnostic = { screen = Screen.DIAGNOSTIC },
+                            onOpenTrend = { screen = Screen.TREND },
+                        )
+                        Screen.DIAGNOSTIC -> {
+                            val reading by viewModel.reading.collectAsStateWithLifecycle()
+                            DiagnosticScreen(reading)
+                        }
+                        Screen.TREND -> TrendScreen(trendViewModel)
                     }
                 }
             }
         }
     }
+
+    private enum class Screen { DASHBOARD, DIAGNOSTIC, TREND }
 }

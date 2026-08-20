@@ -17,6 +17,7 @@ class DashboardViewModel(
     val reading = monitorRepository.reading
     val autoMonitoringEnabled = settingsRepository.autoMonitoringEnabled
     val statusBarWattEnabled = settingsRepository.statusBarWattEnabled
+    val trendRecordingEnabled = settingsRepository.trendRecordingEnabled
 
     fun setAutoMonitoringEnabled(enabled: Boolean) {
         settingsRepository.setAutoMonitoringEnabled(enabled)
@@ -25,6 +26,10 @@ class DashboardViewModel(
 
     fun setStatusBarWattEnabled(enabled: Boolean) {
         settingsRepository.setStatusBarWattEnabled(enabled)
+    }
+
+    fun setTrendRecordingEnabled(enabled: Boolean) {
+        settingsRepository.setTrendRecordingEnabled(enabled)
     }
 
     companion object {

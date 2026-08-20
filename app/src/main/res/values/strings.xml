@@ -4,6 +4,22 @@
     <string name="monitoring_description">충전·방전 상태를 알림으로 표시</string>
     <string name="status_bar_watt">상태바 와트 표시 (실험 기능)</string>
     <string name="status_bar_watt_description">Android 16 QPR1 이상에서 지원 시 상태바에 와트를 표시</string>
+    <string name="trend_recording">트렌드 기록</string>
+    <string name="trend_recording_description">5분 평균 기록을 최근 30일 동안 기기에 보관</string>
+    <string name="trend_history">트렌드 기록</string>
+    <string name="battery_flow">배터리 흐름</string>
+    <string name="today_flow">오늘의 흐름</string>
+    <string name="power_change">충전 전력 변화</string>
+    <string name="charging">충전</string>
+    <string name="discharging">방전</string>
+    <string name="charge_sessions">충전</string>
+    <string name="gained">획득</string>
+    <string name="discharged">방전</string>
+    <string name="power_peak">전력 피크</string>
+    <string name="power_watts">전력 (W)</string>
+    <string name="times">회</string>
+    <string name="no_trend_records">트렌드 기록을 켜면 이곳에 5분 평균값이 쌓입니다.</string>
+    <string name="trend_average_note">전력은 5분 단위 평균값입니다.</string>
     <string name="diagnostics">상세 진단</string>
     <string name="diagnostic_power" translatable="false">충전 전력</string>
     <string name="diagnostic_voltage" translatable="false">전압</string>

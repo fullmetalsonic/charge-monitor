@@ -67,6 +67,9 @@ class ChargeMonitoringService : Service() {
                     status = stabilizeMonitorStatus.update(observeChargingState(sample, stablePower)),
                 )
                 container.chargeMonitorRepository.publish(reading)
+                if (container.settingsRepository.isTrendRecordingEnabled()) {
+                    container.trendHistoryRepository.record(reading)
+                }
                 startAsForeground(reading)
                 delay(UPDATE_INTERVAL_MILLIS)
             }
