@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.chargemonitor.R
+import com.chargemonitor.data.model.TrendRecordingInterval
 import com.chargemonitor.ui.design.Muted
 
 @Composable
@@ -26,6 +27,8 @@ internal fun DashboardControls(
     onEnabledChange: (Boolean) -> Unit,
     trendRecordingEnabled: Boolean,
     onTrendRecordingEnabledChange: (Boolean) -> Unit,
+    trendRecordingInterval: TrendRecordingInterval,
+    onOpenTrendRecordingSettings: () -> Unit,
     monitoringStartFailed: Boolean,
     onOpenTrend: () -> Unit,
     onOpenDiagnostic: () -> Unit,
@@ -41,9 +44,10 @@ internal fun DashboardControls(
     HorizontalDivider(color = MaterialTheme.colorScheme.outline)
     SettingRow(
         title = stringResource(R.string.trend_recording),
-        description = stringResource(R.string.trend_recording_description),
+        description = trendRecordingDescription(trendRecordingInterval),
         checked = trendRecordingEnabled,
         onCheckedChange = onTrendRecordingEnabledChange,
+        onContentClick = onOpenTrendRecordingSettings,
     )
     HorizontalDivider(color = MaterialTheme.colorScheme.outline)
     DashboardLink(stringResource(R.string.trend_history), onOpenTrend)
@@ -56,6 +60,7 @@ private fun SettingRow(
     description: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    onContentClick: (() -> Unit)? = null,
     error: Boolean = false,
 ) {
     Row(
@@ -63,7 +68,11 @@ private fun SettingRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .then(if (onContentClick != null) Modifier.clickable(onClick = onContentClick) else Modifier),
+        ) {
             Text(title, style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(5.dp))
             Text(description, color = Muted, style = MaterialTheme.typography.bodyMedium)
@@ -78,6 +87,12 @@ private fun SettingRow(
         }
         Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
+}
+
+@Composable
+private fun trendRecordingDescription(interval: TrendRecordingInterval): String = when (interval) {
+    TrendRecordingInterval.STANDARD -> stringResource(R.string.trend_recording_description_standard)
+    TrendRecordingInterval.PRECISION -> stringResource(R.string.trend_recording_description_precision)
 }
 
 @Composable

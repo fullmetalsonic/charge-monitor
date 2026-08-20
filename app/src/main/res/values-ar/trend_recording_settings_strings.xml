@@ -1,0 +1,11 @@
+<resources>
+    <string name="trend_recording_settings">إعدادات سجل الاتجاه</string>
+    <string name="trend_recording_standard">قياسي · متوسط 5 دقائق</string>
+    <string name="trend_recording_description_standard">حفظ متوسطات 5 دقائق على هذا الجهاز لمدة 30 يومًا</string>
+    <string name="trend_recording_precision">دقيق · متوسط دقيقة واحدة</string>
+    <string name="trend_recording_description_precision">حفظ متوسطات دقيقة واحدة لمدة 30 يومًا · لتحليل أداء الشحن</string>
+    <string name="no_trend_records_standard">شغّل سجل الاتجاه لتتراكم هنا متوسطات 5 دقائق.</string>
+    <string name="no_trend_records_precision">شغّل سجل الاتجاه لتتراكم هنا متوسطات دقيقة واحدة.</string>
+    <string name="trend_average_note_standard">القدرة هي متوسط لمدة 5 دقائق.</string>
+    <string name="trend_average_note_precision">القدرة هي متوسط لمدة دقيقة واحدة.</string>
+</resources>

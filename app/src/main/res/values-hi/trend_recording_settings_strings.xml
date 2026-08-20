@@ -1,0 +1,11 @@
+<resources>
+    <string name="trend_recording_settings">ट्रेंड रिकॉर्डिंग सेटिंग</string>
+    <string name="trend_recording_standard">मानक · 5 मिनट औसत</string>
+    <string name="trend_recording_description_standard">5 मिनट के औसत को इस डिवाइस में 30 दिनों तक रखें</string>
+    <string name="trend_recording_precision">सटीक · 1 मिनट औसत</string>
+    <string name="trend_recording_description_precision">1 मिनट के औसत को 30 दिनों तक रखें · चार्जिंग प्रदर्शन विश्लेषण के लिए</string>
+    <string name="no_trend_records_standard">यहाँ 5 मिनट के औसत जमा करने के लिए ट्रेंड रिकॉर्डिंग चालू करें।</string>
+    <string name="no_trend_records_precision">यहाँ 1 मिनट के औसत जमा करने के लिए ट्रेंड रिकॉर्डिंग चालू करें।</string>
+    <string name="trend_average_note_standard">पावर 5 मिनट का औसत है।</string>
+    <string name="trend_average_note_precision">पावर 1 मिनट का औसत है।</string>
+</resources>

@@ -1,0 +1,11 @@
+<resources>
+    <string name="trend_recording_settings">Настройки истории</string>
+    <string name="trend_recording_standard">Стандарт · среднее за 5 мин</string>
+    <string name="trend_recording_description_standard">Хранить 5-минутные средние на устройстве 30 дней</string>
+    <string name="trend_recording_precision">Точно · среднее за 1 мин</string>
+    <string name="trend_recording_description_precision">Хранить 1-минутные средние 30 дней · для анализа зарядки</string>
+    <string name="no_trend_records_standard">Включите историю, чтобы здесь накапливались средние за 5 минут.</string>
+    <string name="no_trend_records_precision">Включите историю, чтобы здесь накапливались средние за 1 минуту.</string>
+    <string name="trend_average_note_standard">Мощность показана как среднее за 5 минут.</string>
+    <string name="trend_average_note_precision">Мощность показана как среднее за 1 минуту.</string>
+</resources>

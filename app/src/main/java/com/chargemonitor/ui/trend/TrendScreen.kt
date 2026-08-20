@@ -47,7 +47,9 @@ import com.chargemonitor.R
 import com.chargemonitor.data.model.DailyTrendSummary
 import com.chargemonitor.data.model.TrendDirection
 import com.chargemonitor.data.model.TrendRecord
+import com.chargemonitor.data.model.TrendRecordingInterval
 import com.chargemonitor.domain.TrendTimeline
+import com.chargemonitor.domain.TrendCursorSelection
 import com.chargemonitor.ui.design.Divider
 import com.chargemonitor.ui.design.GaugeTrack
 import com.chargemonitor.ui.design.Ink
@@ -81,9 +83,11 @@ private fun TrendContent(
     onShowToday: () -> Unit,
 ) {
     val summary = state.summary
-    var selectedBucket by remember(summary.date) { mutableStateOf<Int?>(null) }
-    val selectedRecord = selectedBucket?.let { bucket ->
-        summary.records.firstOrNull { TrendTimeline.bucketForTimestamp(it.capturedAtMillis) == bucket }
+    val displayRecords = state.displayRecords
+    val interval = state.recordingInterval
+    var selectedMinute by remember(summary.date) { mutableStateOf<Int?>(null) }
+    val selectedRecord = selectedMinute?.let { minute ->
+        TrendCursorSelection.recordForMinute(displayRecords, minute)
     }
     Column(
         modifier = Modifier
@@ -97,15 +101,15 @@ private fun TrendContent(
         Spacer(Modifier.height(26.dp))
         Text(stringResource(R.string.battery_flow), style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(12.dp))
-        if (summary.records.isEmpty()) {
-            EmptyTrendState()
+        if (displayRecords.isEmpty()) {
+            EmptyTrendState(interval)
         } else {
             Surface(color = SlateSurface, shape = RoundedCornerShape(24.dp)) {
                 Column(Modifier.padding(16.dp)) {
-                    BatteryFlowChart(summary.records, selectedBucket) { selectedBucket = it }
-                    selectedBucket?.let { bucket ->
+                    BatteryFlowChart(displayRecords, selectedMinute) { selectedMinute = it }
+                    selectedMinute?.let { minute ->
                         Spacer(Modifier.height(10.dp))
-                        TrendCursorInfo(bucket, selectedRecord)
+                        TrendCursorInfo(minute, selectedRecord)
                     }
                     Spacer(Modifier.height(4.dp))
                     DayTimelineLabels()
@@ -125,16 +129,20 @@ private fun TrendContent(
         Spacer(Modifier.height(22.dp))
         Text(stringResource(R.string.power_change), style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(12.dp))
-        if (summary.records.isEmpty()) {
-            EmptyTrendState()
+        if (displayRecords.isEmpty()) {
+            EmptyTrendState(interval)
         } else {
-            PowerChart(summary.records, summary.peakWatts, selectedBucket) { selectedBucket = it }
-            selectedBucket?.let { bucket ->
+            PowerChart(
+                displayRecords,
+                displayRecords.mapNotNull { it.powerWatts }.maxOrNull(),
+                selectedMinute,
+            ) { selectedMinute = it }
+            selectedMinute?.let { minute ->
                 Spacer(Modifier.height(10.dp))
-                TrendCursorInfo(bucket, selectedRecord)
+                TrendCursorInfo(minute, selectedRecord)
             }
             Spacer(Modifier.height(8.dp))
-            Text(stringResource(R.string.trend_average_note), color = Muted, style = MaterialTheme.typography.bodySmall)
+            Text(trendAverageNote(interval), color = Muted, style = MaterialTheme.typography.bodySmall)
         }
     }
 }
@@ -201,13 +209,11 @@ private fun DateStrip(
 }
 
 private const val SWIPE_THRESHOLD = 72f
-private const val DAILY_BUCKET_COUNT = 288f
-
 @Composable
-private fun EmptyTrendState() {
+private fun EmptyTrendState(interval: TrendRecordingInterval) {
     Surface(color = SlateSurface, shape = RoundedCornerShape(24.dp)) {
         Text(
-            stringResource(R.string.no_trend_records),
+            noTrendRecordsText(interval),
             modifier = Modifier.fillMaxWidth().padding(vertical = 42.dp, horizontal = 24.dp),
             color = Muted,
             textAlign = TextAlign.Center,
@@ -219,21 +225,21 @@ private fun EmptyTrendState() {
 @Composable
 private fun BatteryFlowChart(
     records: List<TrendRecord>,
-    selectedBucket: Int?,
-    onBucketSelected: (Int) -> Unit,
+    selectedMinute: Int?,
+    onMinuteSelected: (Int) -> Unit,
 ) {
-    val cursorInput = rememberTrendCursorInput(onBucketSelected)
+    val cursorInput = rememberTrendCursorInput(onMinuteSelected)
     Canvas(Modifier.fillMaxWidth().height(250.dp).then(cursorInput)) {
         val bottom = size.height - 18.dp.toPx()
         val chartHeight = bottom - 12.dp.toPx()
-        val strokeWidth = max(2.dp.toPx(), size.width / DAILY_BUCKET_COUNT * 0.55f)
+        val strokeWidth = max(2.dp.toPx(), size.width / TrendTimeline.MINUTES_PER_DAY * 0.55f)
         records.forEach { record ->
             val x = size.width * TrendTimeline.dayFraction(record.capturedAtMillis)
             val y = bottom - chartHeight * record.batteryPercent / 100f
             val color = if (record.direction == TrendDirection.CHARGING) Lime else GaugeTrack
             drawLine(color, Offset(x, bottom), Offset(x, y), strokeWidth = strokeWidth, cap = StrokeCap.Round)
         }
-        drawTrendCursor(selectedBucket, records) { record -> bottom - chartHeight * record.batteryPercent / 100f }
+        drawTrendCursor(selectedMinute, records) { record -> bottom - chartHeight * record.batteryPercent / 100f }
     }
 }
 
@@ -241,10 +247,10 @@ private fun BatteryFlowChart(
 private fun PowerChart(
     records: List<TrendRecord>,
     peakWatts: Double?,
-    selectedBucket: Int?,
-    onBucketSelected: (Int) -> Unit,
+    selectedMinute: Int?,
+    onMinuteSelected: (Int) -> Unit,
 ) {
-    val cursorInput = rememberTrendCursorInput(onBucketSelected)
+    val cursorInput = rememberTrendCursorInput(onMinuteSelected)
     Column {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(stringResource(R.string.power_watts), color = Muted, style = MaterialTheme.typography.bodyMedium)
@@ -262,14 +268,14 @@ private fun PowerChart(
             val scaleMax = max(30.0, values.maxOrNull() ?: 0.0)
             val bottom = size.height - 14.dp.toPx()
             val chartHeight = bottom - 12.dp.toPx()
-            val strokeWidth = max(2.dp.toPx(), size.width / DAILY_BUCKET_COUNT * 0.55f)
+            val strokeWidth = max(2.dp.toPx(), size.width / TrendTimeline.MINUTES_PER_DAY * 0.55f)
             values.forEachIndexed { index, value ->
                 val x = size.width * TrendTimeline.dayFraction(records[index].capturedAtMillis)
                 val y = bottom - (value / scaleMax * chartHeight).toFloat()
                 val color = if (records[index].direction == TrendDirection.CHARGING) Lime else GaugeTrack
                 drawLine(color, Offset(x, bottom), Offset(x, y), strokeWidth = strokeWidth, cap = StrokeCap.Round)
             }
-            drawTrendCursor(selectedBucket, records) { record ->
+            drawTrendCursor(selectedMinute, records) { record ->
                 record.powerWatts?.let { bottom - (it / scaleMax * chartHeight).toFloat() }
             }
         }
@@ -279,11 +285,13 @@ private fun PowerChart(
 }
 
 @Composable
-private fun rememberTrendCursorInput(onBucketSelected: (Int) -> Unit): Modifier {
-    val latestOnBucketSelected = rememberUpdatedState(onBucketSelected)
+private fun rememberTrendCursorInput(
+    onMinuteSelected: (Int) -> Unit,
+): Modifier {
+    val latestOnMinuteSelected = rememberUpdatedState(onMinuteSelected)
     fun selectAt(x: Float, width: IntSize) {
         if (width.width > 0) {
-            latestOnBucketSelected.value(TrendTimeline.bucketForFraction(x / width.width))
+            latestOnMinuteSelected.value(TrendTimeline.minuteForFraction(x / width.width))
         }
     }
     return Modifier
@@ -299,23 +307,26 @@ private fun rememberTrendCursorInput(onBucketSelected: (Int) -> Unit): Modifier 
 }
 
 private fun DrawScope.drawTrendCursor(
-    selectedBucket: Int?,
+    selectedMinute: Int?,
     records: List<TrendRecord>,
     yForRecord: (TrendRecord) -> Float?,
 ) {
-    val bucket = selectedBucket ?: return
-    val x = size.width * TrendTimeline.fractionForBucket(bucket)
+    val minute = selectedMinute ?: return
+    val x = size.width * TrendTimeline.fractionForMinute(minute)
     drawLine(Lime.copy(alpha = 0.8f), Offset(x, 0f), Offset(x, size.height), strokeWidth = 1.5.dp.toPx())
-    records.firstOrNull { TrendTimeline.bucketForTimestamp(it.capturedAtMillis) == bucket }
+    TrendCursorSelection.recordForMinute(records, minute)
         ?.let(yForRecord)
         ?.let { y -> drawCircle(Lime, radius = 4.dp.toPx(), center = Offset(x, y)) }
 }
 
 @Composable
-private fun TrendCursorInfo(selectedBucket: Int, record: TrendRecord?) {
+private fun TrendCursorInfo(
+    selectedMinute: Int,
+    record: TrendRecord?,
+) {
     Surface(color = GaugeTrack.copy(alpha = 0.45f), shape = RoundedCornerShape(14.dp)) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp)) {
-            Text(TrendTimeline.timeLabel(selectedBucket), color = Lime, style = MaterialTheme.typography.titleSmall)
+            Text(TrendTimeline.timeLabelForMinute(selectedMinute), color = Lime, style = MaterialTheme.typography.titleSmall)
             if (record == null) {
                 Text(stringResource(R.string.trend_no_record_at_time), color = Muted, style = MaterialTheme.typography.bodyMedium)
             } else {
@@ -328,6 +339,18 @@ private fun TrendCursorInfo(selectedBucket: Int, record: TrendRecord?) {
             }
         }
     }
+}
+
+@Composable
+private fun noTrendRecordsText(interval: TrendRecordingInterval): String = when (interval) {
+    TrendRecordingInterval.STANDARD -> stringResource(R.string.no_trend_records_standard)
+    TrendRecordingInterval.PRECISION -> stringResource(R.string.no_trend_records_precision)
+}
+
+@Composable
+private fun trendAverageNote(interval: TrendRecordingInterval): String = when (interval) {
+    TrendRecordingInterval.STANDARD -> stringResource(R.string.trend_average_note_standard)
+    TrendRecordingInterval.PRECISION -> stringResource(R.string.trend_average_note_precision)
 }
 
 @Composable

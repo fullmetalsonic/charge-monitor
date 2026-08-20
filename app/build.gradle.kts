@@ -17,8 +17,8 @@ android {
         applicationId = "com.chargemonitor"
         minSdk = 34
         targetSdk = 37
-        versionCode = 17
-        versionName = "0.1.16"
+        versionCode = 18
+        versionName = "0.1.17"
     }
 
     signingConfigs {

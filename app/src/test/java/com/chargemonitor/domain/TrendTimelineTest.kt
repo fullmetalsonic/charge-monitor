@@ -2,6 +2,7 @@ package com.chargemonitor.domain
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import com.chargemonitor.data.model.TrendRecordingInterval
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -27,23 +28,30 @@ class TrendTimelineTest {
     }
 
     @Test
-    fun `touch position maps to its five minute bucket`() {
-        assertEquals(0, TrendTimeline.bucketForFraction(0f))
-        assertEquals(111, TrendTimeline.bucketForFraction(111f / TrendTimeline.BUCKET_COUNT))
-        assertEquals(287, TrendTimeline.bucketForFraction(1f))
+    fun `touch position maps to the selected interval bucket`() {
+        assertEquals(0, TrendTimeline.bucketForFraction(0f, TrendRecordingInterval.STANDARD))
+        assertEquals(111, TrendTimeline.bucketForFraction(111f / 288f, TrendRecordingInterval.STANDARD))
+        assertEquals(1_439, TrendTimeline.bucketForFraction(1f, TrendRecordingInterval.PRECISION))
     }
 
     @Test
-    fun `bucket label uses twenty four hour time`() {
-        assertEquals("00:00", TrendTimeline.timeLabel(0))
-        assertEquals("09:15", TrendTimeline.timeLabel(111))
-        assertEquals("23:55", TrendTimeline.timeLabel(287))
+    fun `bucket label uses the selected resolution`() {
+        assertEquals("00:00", TrendTimeline.timeLabel(0, TrendRecordingInterval.STANDARD))
+        assertEquals("09:15", TrendTimeline.timeLabel(111, TrendRecordingInterval.STANDARD))
+        assertEquals("09:17", TrendTimeline.timeLabel(557, TrendRecordingInterval.PRECISION))
     }
 
     @Test
-    fun `timestamp stays in its exact five minute bucket`() {
+    fun `timestamp stays in its exact selected resolution bucket`() {
         val millis = LocalDateTime.of(date, LocalTime.of(9, 15)).atZone(zone).toInstant().toEpochMilli()
-        assertEquals(111, TrendTimeline.bucketForTimestamp(millis, zone))
+        assertEquals(111, TrendTimeline.bucketForTimestamp(millis, TrendRecordingInterval.STANDARD, zone))
+        assertEquals(555, TrendTimeline.bucketForTimestamp(millis, TrendRecordingInterval.PRECISION, zone))
+    }
+
+    @Test
+    fun `minute cursor keeps exact one minute precision`() {
+        assertEquals(557, TrendTimeline.minuteForFraction(557f / TrendTimeline.MINUTES_PER_DAY))
+        assertEquals("09:17", TrendTimeline.timeLabelForMinute(557))
     }
 
     private fun fractionAt(hour: Int, minute: Int): Float {

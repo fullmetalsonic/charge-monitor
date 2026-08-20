@@ -1,0 +1,11 @@
+<resources>
+    <string name="trend_recording_settings">趋势记录设置</string>
+    <string name="trend_recording_standard">标准 · 5分钟平均</string>
+    <string name="trend_recording_description_standard">在此设备保存30天的5分钟平均记录</string>
+    <string name="trend_recording_precision">精细 · 1分钟平均</string>
+    <string name="trend_recording_description_precision">保存30天的1分钟平均记录 · 用于充电性能分析</string>
+    <string name="no_trend_records_standard">开启趋势记录后，这里会累积5分钟平均值。</string>
+    <string name="no_trend_records_precision">开启趋势记录后，这里会累积1分钟平均值。</string>
+    <string name="trend_average_note_standard">功率为5分钟平均值。</string>
+    <string name="trend_average_note_precision">功率为1分钟平均值。</string>
+</resources>

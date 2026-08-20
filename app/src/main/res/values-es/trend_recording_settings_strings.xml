@@ -1,0 +1,11 @@
+<resources>
+    <string name="trend_recording_settings">Ajustes del registro de tendencias</string>
+    <string name="trend_recording_standard">Estándar · promedio de 5 min</string>
+    <string name="trend_recording_description_standard">Guardar promedios de 5 minutos durante 30 días en el dispositivo</string>
+    <string name="trend_recording_precision">Precisión · promedio de 1 min</string>
+    <string name="trend_recording_description_precision">Guardar promedios de 1 minuto durante 30 días · para analizar la carga</string>
+    <string name="no_trend_records_standard">Active el registro para acumular aquí promedios de 5 minutos.</string>
+    <string name="no_trend_records_precision">Active el registro para acumular aquí promedios de 1 minuto.</string>
+    <string name="trend_average_note_standard">La potencia es un promedio de 5 minutos.</string>
+    <string name="trend_average_note_precision">La potencia es un promedio de 1 minuto.</string>
+</resources>

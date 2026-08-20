@@ -1,0 +1,11 @@
+<resources>
+    <string name="trend_recording_settings">趨勢記錄設定</string>
+    <string name="trend_recording_standard">標準 · 5分鐘平均</string>
+    <string name="trend_recording_description_standard">在此裝置保留30天的5分鐘平均記錄</string>
+    <string name="trend_recording_precision">精細 · 1分鐘平均</string>
+    <string name="trend_recording_description_precision">保留30天的1分鐘平均記錄 · 用於充電效能分析</string>
+    <string name="no_trend_records_standard">開啟趨勢記錄後，這裡會累積5分鐘平均值。</string>
+    <string name="no_trend_records_precision">開啟趨勢記錄後，這裡會累積1分鐘平均值。</string>
+    <string name="trend_average_note_standard">功率為5分鐘平均值。</string>
+    <string name="trend_average_note_precision">功率為1分鐘平均值。</string>
+</resources>

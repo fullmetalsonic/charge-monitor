@@ -1,0 +1,11 @@
+<resources>
+    <string name="trend_recording_settings">Trendaufzeichnung</string>
+    <string name="trend_recording_standard">Standard · 5-Minuten-Mittelwert</string>
+    <string name="trend_recording_description_standard">5-Minuten-Mittelwerte 30 Tage auf diesem Gerät speichern</string>
+    <string name="trend_recording_precision">Präzise · 1-Minuten-Mittelwert</string>
+    <string name="trend_recording_description_precision">1-Minuten-Mittelwerte 30 Tage speichern · zur Ladeleistungsanalyse</string>
+    <string name="no_trend_records_standard">Aktivieren Sie die Aufzeichnung, um hier 5-Minuten-Mittelwerte zu sammeln.</string>
+    <string name="no_trend_records_precision">Aktivieren Sie die Aufzeichnung, um hier 1-Minuten-Mittelwerte zu sammeln.</string>
+    <string name="trend_average_note_standard">Die Leistung ist ein 5-Minuten-Mittelwert.</string>
+    <string name="trend_average_note_precision">Die Leistung ist ein 1-Minuten-Mittelwert.</string>
+</resources>

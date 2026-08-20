@@ -11,6 +11,8 @@ data class TrendRecord(
     val batteryPercent: Int,
     val powerWatts: Double?,
     val direction: TrendDirection,
+    /** Resolution used when this historical point was created. */
+    val intervalMinutes: Int = TrendRecordingInterval.STANDARD.minutes,
     val sampleCount: Int = 1,
     val powerSampleCount: Int = if (powerWatts == null) 0 else 1,
 )

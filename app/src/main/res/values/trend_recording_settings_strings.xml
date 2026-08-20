@@ -1,0 +1,11 @@
+<resources>
+    <string name="trend_recording_settings">트렌드 기록 설정</string>
+    <string name="trend_recording_standard">표준 · 5분 평균</string>
+    <string name="trend_recording_description_standard">5분 평균 기록을 최근 30일 동안 기기에 보관</string>
+    <string name="trend_recording_precision">정밀 · 1분 평균</string>
+    <string name="trend_recording_description_precision">1분 평균 기록을 최근 30일 동안 기기에 보관 · 충전 성능 분석용</string>
+    <string name="no_trend_records_standard">트렌드 기록을 켜면 이곳에 5분 평균값이 쌓입니다.</string>
+    <string name="no_trend_records_precision">트렌드 기록을 켜면 이곳에 1분 평균값이 쌓입니다.</string>
+    <string name="trend_average_note_standard">전력은 5분 단위 평균값입니다.</string>
+    <string name="trend_average_note_precision">전력은 1분 단위 평균값입니다.</string>
+</resources>

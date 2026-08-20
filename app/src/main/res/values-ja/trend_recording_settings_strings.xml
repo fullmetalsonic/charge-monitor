@@ -1,0 +1,11 @@
+<resources>
+    <string name="trend_recording_settings">トレンド記録設定</string>
+    <string name="trend_recording_standard">標準 · 5分平均</string>
+    <string name="trend_recording_description_standard">5分平均の記録をこの端末に30日間保存</string>
+    <string name="trend_recording_precision">詳細 · 1分平均</string>
+    <string name="trend_recording_description_precision">1分平均の記録を30日間保存 · 充電性能分析用</string>
+    <string name="no_trend_records_standard">トレンド記録をオンにすると、ここに5分平均値が蓄積されます。</string>
+    <string name="no_trend_records_precision">トレンド記録をオンにすると、ここに1分平均値が蓄積されます。</string>
+    <string name="trend_average_note_standard">電力は5分単位の平均値です。</string>
+    <string name="trend_average_note_precision">電力は1分単位の平均値です。</string>
+</resources>

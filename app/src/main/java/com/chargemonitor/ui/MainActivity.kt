@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
     }
     private val requestNotifications = registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
     private val trendViewModel: TrendViewModel by viewModels {
-        TrendViewModel.factory(container.trendHistoryRepository)
+        TrendViewModel.factory(container.trendHistoryRepository, container.settingsRepository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,0 +1,11 @@
+<resources>
+    <string name="trend_recording_settings">Réglages de l’historique</string>
+    <string name="trend_recording_standard">Standard · moyenne sur 5 min</string>
+    <string name="trend_recording_description_standard">Conserver les moyennes de 5 minutes sur l’appareil pendant 30 jours</string>
+    <string name="trend_recording_precision">Précision · moyenne sur 1 min</string>
+    <string name="trend_recording_description_precision">Conserver les moyennes d’une minute pendant 30 jours · analyse de charge</string>
+    <string name="no_trend_records_standard">Activez l’historique pour accumuler ici des moyennes sur 5 minutes.</string>
+    <string name="no_trend_records_precision">Activez l’historique pour accumuler ici des moyennes sur 1 minute.</string>
+    <string name="trend_average_note_standard">La puissance est une moyenne sur 5 minutes.</string>
+    <string name="trend_average_note_precision">La puissance est une moyenne sur 1 minute.</string>
+</resources>

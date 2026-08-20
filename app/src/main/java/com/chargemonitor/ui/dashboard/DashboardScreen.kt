@@ -22,7 +22,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -39,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chargemonitor.R
 import com.chargemonitor.data.model.ChargeReading
 import com.chargemonitor.data.model.MonitorStatus
+import com.chargemonitor.data.model.TrendRecordingInterval
 import com.chargemonitor.ui.design.GaugeTrack
 import com.chargemonitor.ui.design.Lime
 import com.chargemonitor.ui.design.Muted
@@ -49,6 +53,7 @@ fun DashboardScreen(viewModel: DashboardViewModel, onOpenDiagnostic: () -> Unit,
     val reading by viewModel.reading.collectAsStateWithLifecycle()
     val enabled by viewModel.autoMonitoringEnabled.collectAsStateWithLifecycle()
     val trendRecordingEnabled by viewModel.trendRecordingEnabled.collectAsStateWithLifecycle()
+    val trendRecordingInterval by viewModel.trendRecordingInterval.collectAsStateWithLifecycle()
     val monitoringStartFailed by viewModel.monitoringStartFailed.collectAsStateWithLifecycle()
     DashboardContent(
         reading = reading,
@@ -56,6 +61,8 @@ fun DashboardScreen(viewModel: DashboardViewModel, onOpenDiagnostic: () -> Unit,
         onEnabledChange = viewModel::setAutoMonitoringEnabled,
         trendRecordingEnabled = trendRecordingEnabled,
         onTrendRecordingEnabledChange = viewModel::setTrendRecordingEnabled,
+        trendRecordingInterval = trendRecordingInterval,
+        onTrendRecordingIntervalChange = viewModel::setTrendRecordingInterval,
         monitoringStartFailed = monitoringStartFailed,
         onOpenDiagnostic = onOpenDiagnostic,
         onOpenTrend = onOpenTrend,
@@ -69,10 +76,13 @@ private fun DashboardContent(
     onEnabledChange: (Boolean) -> Unit,
     trendRecordingEnabled: Boolean,
     onTrendRecordingEnabledChange: (Boolean) -> Unit,
+    trendRecordingInterval: TrendRecordingInterval,
+    onTrendRecordingIntervalChange: (TrendRecordingInterval) -> Unit,
     monitoringStartFailed: Boolean,
     onOpenDiagnostic: () -> Unit,
     onOpenTrend: () -> Unit,
 ) {
+    var showTrendRecordingSettings by remember { mutableStateOf(false) }
     val sample = reading.sample
     BoxWithConstraints(
         modifier = Modifier
@@ -88,6 +98,8 @@ private fun DashboardContent(
                 onEnabledChange = onEnabledChange,
                 trendRecordingEnabled = trendRecordingEnabled,
                 onTrendRecordingEnabledChange = onTrendRecordingEnabledChange,
+                trendRecordingInterval = trendRecordingInterval,
+                onOpenTrendRecordingSettings = { showTrendRecordingSettings = true },
                 monitoringStartFailed = monitoringStartFailed,
                 onOpenTrend = onOpenTrend,
                 onOpenDiagnostic = onOpenDiagnostic,
@@ -100,9 +112,21 @@ private fun DashboardContent(
                 onEnabledChange = onEnabledChange,
                 trendRecordingEnabled = trendRecordingEnabled,
                 onTrendRecordingEnabledChange = onTrendRecordingEnabledChange,
+                trendRecordingInterval = trendRecordingInterval,
+                onOpenTrendRecordingSettings = { showTrendRecordingSettings = true },
                 monitoringStartFailed = monitoringStartFailed,
                 onOpenTrend = onOpenTrend,
                 onOpenDiagnostic = onOpenDiagnostic,
+            )
+        }
+        if (showTrendRecordingSettings) {
+            TrendRecordingSettingsSheet(
+                selectedInterval = trendRecordingInterval,
+                onIntervalSelected = {
+                    onTrendRecordingIntervalChange(it)
+                    showTrendRecordingSettings = false
+                },
+                onDismiss = { showTrendRecordingSettings = false },
             )
         }
     }
@@ -116,6 +140,8 @@ private fun DashboardPortrait(
     onEnabledChange: (Boolean) -> Unit,
     trendRecordingEnabled: Boolean,
     onTrendRecordingEnabledChange: (Boolean) -> Unit,
+    trendRecordingInterval: TrendRecordingInterval,
+    onOpenTrendRecordingSettings: () -> Unit,
     monitoringStartFailed: Boolean,
     onOpenTrend: () -> Unit,
     onOpenDiagnostic: () -> Unit,
@@ -131,6 +157,7 @@ private fun DashboardPortrait(
         Spacer(Modifier.height(28.dp))
         DashboardControls(
             enabled, onEnabledChange, trendRecordingEnabled, onTrendRecordingEnabledChange,
+            trendRecordingInterval, onOpenTrendRecordingSettings,
             monitoringStartFailed, onOpenTrend, onOpenDiagnostic,
         )
     }
@@ -144,6 +171,8 @@ private fun DashboardLandscape(
     onEnabledChange: (Boolean) -> Unit,
     trendRecordingEnabled: Boolean,
     onTrendRecordingEnabledChange: (Boolean) -> Unit,
+    trendRecordingInterval: TrendRecordingInterval,
+    onOpenTrendRecordingSettings: () -> Unit,
     monitoringStartFailed: Boolean,
     onOpenTrend: () -> Unit,
     onOpenDiagnostic: () -> Unit,
@@ -164,6 +193,7 @@ private fun DashboardLandscape(
         ) {
             DashboardControls(
                 enabled, onEnabledChange, trendRecordingEnabled, onTrendRecordingEnabledChange,
+                trendRecordingInterval, onOpenTrendRecordingSettings,
                 monitoringStartFailed, onOpenTrend, onOpenDiagnostic,
             )
         }

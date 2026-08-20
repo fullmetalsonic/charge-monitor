@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.chargemonitor.data.repository.ChargeMonitorRepository
 import com.chargemonitor.data.repository.SettingsRepository
+import com.chargemonitor.data.model.TrendRecordingInterval
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -18,6 +19,7 @@ class DashboardViewModel(
     val reading = monitorRepository.reading
     val autoMonitoringEnabled = settingsRepository.autoMonitoringEnabled
     val trendRecordingEnabled = settingsRepository.trendRecordingEnabled
+    val trendRecordingInterval = settingsRepository.trendRecordingInterval
     private val _monitoringStartFailed = MutableStateFlow(false)
     val monitoringStartFailed = _monitoringStartFailed.asStateFlow()
 
@@ -43,6 +45,10 @@ class DashboardViewModel(
 
     fun setTrendRecordingEnabled(enabled: Boolean) {
         settingsRepository.setTrendRecordingEnabled(enabled)
+    }
+
+    fun setTrendRecordingInterval(interval: TrendRecordingInterval) {
+        settingsRepository.setTrendRecordingInterval(interval)
     }
 
     companion object {

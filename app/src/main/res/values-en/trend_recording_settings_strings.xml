@@ -1,0 +1,11 @@
+<resources>
+    <string name="trend_recording_settings">Trend recording settings</string>
+    <string name="trend_recording_standard">Standard · 5-minute average</string>
+    <string name="trend_recording_description_standard">Store 5-minute averages on this device for 30 days</string>
+    <string name="trend_recording_precision">Precision · 1-minute average</string>
+    <string name="trend_recording_description_precision">Store 1-minute averages for 30 days · for charging performance analysis</string>
+    <string name="no_trend_records_standard">Turn on trend recording to collect 5-minute averages here.</string>
+    <string name="no_trend_records_precision">Turn on trend recording to collect 1-minute averages here.</string>
+    <string name="trend_average_note_standard">Power is averaged in 5-minute intervals.</string>
+    <string name="trend_average_note_precision">Power is averaged in 1-minute intervals.</string>
+</resources>

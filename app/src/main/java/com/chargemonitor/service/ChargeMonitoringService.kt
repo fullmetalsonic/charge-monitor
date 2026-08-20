@@ -70,7 +70,10 @@ class ChargeMonitoringService : Service() {
                 )
                 container.chargeMonitorRepository.publish(reading)
                     if (container.settingsRepository.isTrendRecordingEnabled()) {
-                        container.trendHistoryRepository.record(reading)
+                        container.trendHistoryRepository.record(
+                            reading,
+                            container.settingsRepository.trendRecordingInterval.value,
+                        )
                     }
                     if (monitorUpdatePolicy.shouldRefreshNotification(reading)) {
                         startAsForeground(reading)
