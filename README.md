@@ -1,8 +1,21 @@
-# 충전량 표시 어플
+# Charge Monitor
 
-삼성 Galaxy Z Fold8에서 충전 중인 배터리 전압·전류를 읽어 추정 충전 전력(W)을 상태바 알림에 표시하고, 기기 설정이 허용하는 범위에서 AOD 알림에도 보이게 하는 Android 앱의 기획 단계 저장소입니다.
+Android 14 이상에서 배터리 전압·전류를 읽어 충전·방전 전력(W)을 계산하고, 상태바·잠금화면 알림으로 표시하는 Android 앱입니다.
 
-현재는 **코드를 작성하지 않은 상태**입니다. 구현 전에 요구사항, 기술 제약, 파일 분배를 문서로 먼저 확정합니다.
+<p align="center">
+  <img src="assets/readme/dashboard-discharge.png" alt="Charge Monitor discharge dashboard example" width="360" />
+</p>
+
+## 주요 기능
+
+- 충전 중: 현재 충전 전력 표시
+- 방전 중: 현재 방전 전력 표시
+- 만충: 충전 완료 상태 표시
+- 상태바 및 잠금화면 지속 알림
+
+## 다운로드
+
+[최신 공개 APK 받기](https://github.com/fullmetalsonic/charge-monitor/releases/latest)
 
 ## 문서
 
@@ -17,7 +30,7 @@
 - 확정된 기능 또는 파일 구조가 바뀌면 해당 기획서·구조 문서도 함께 갱신한다.
 - 구현 전 결정되지 않은 항목은 추정으로 고정하지 않고 `보류`로 기록한다.
 
-## 현재 빌드
+## 빌드 정보
 
 - Android 14(API 34) 이상, Android 17(API 37) 대상
 - Android Gradle Plugin 9.1.1 / Gradle 9.3.1 / JDK 17
