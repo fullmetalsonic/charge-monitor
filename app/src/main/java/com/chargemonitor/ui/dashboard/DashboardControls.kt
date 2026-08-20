@@ -48,6 +48,7 @@ internal fun DashboardControls(
         checked = trendRecordingEnabled,
         onCheckedChange = onTrendRecordingEnabledChange,
         onContentClick = onOpenTrendRecordingSettings,
+        contentActionLabel = stringResource(R.string.trend_recording_settings),
     )
     HorizontalDivider(color = MaterialTheme.colorScheme.outline)
     DashboardLink(stringResource(R.string.trend_history), onOpenTrend)
@@ -61,6 +62,7 @@ private fun SettingRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     onContentClick: (() -> Unit)? = null,
+    contentActionLabel: String? = null,
     error: Boolean = false,
 ) {
     Row(
@@ -76,6 +78,14 @@ private fun SettingRow(
             Text(title, style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(5.dp))
             Text(description, color = Muted, style = MaterialTheme.typography.bodyMedium)
+            if (contentActionLabel != null) {
+                Spacer(Modifier.height(7.dp))
+                Text(
+                    text = "$contentActionLabel  ›",
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            }
             if (error) {
                 Spacer(Modifier.height(6.dp))
                 Text(
