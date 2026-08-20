@@ -3,8 +3,6 @@ package com.chargemonitor.platform.notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.core.app.NotificationCompat
 import com.chargemonitor.R
 import com.chargemonitor.data.model.ChargeReading
@@ -13,14 +11,6 @@ import com.chargemonitor.ui.MainActivity
 import com.chargemonitor.util.PowerFormatter
 
 class ChargeNotificationFactory(private val context: Context) {
-    private val largeIcon by lazy {
-        BitmapFactory.decodeResource(context.resources, R.drawable.ic_launcher).let { source ->
-            Bitmap.createScaledBitmap(source, 192, 192, true).also { scaled ->
-                if (scaled !== source) source.recycle()
-            }
-        }
-    }
-
     fun create(reading: ChargeReading): android.app.Notification {
         NotificationChannelManager.ensureCreated(context)
         val launchIntent = Intent(context, MainActivity::class.java)
@@ -40,8 +30,7 @@ class ChargeNotificationFactory(private val context: Context) {
             MonitorStatus.DISABLED -> context.getString(R.string.status_disabled)
         }
         return NotificationCompat.Builder(context, NotificationChannelManager.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification_plug)
-            .setLargeIcon(largeIcon)
+            .setSmallIcon(android.R.drawable.ic_lock_idle_charging)
             .setContentTitle(context.getString(R.string.app_name))
             .setContentText(content)
             .setStyle(NotificationCompat.BigTextStyle().bigText(content))
