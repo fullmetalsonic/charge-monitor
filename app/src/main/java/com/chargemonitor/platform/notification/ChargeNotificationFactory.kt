@@ -21,7 +21,7 @@ class ChargeNotificationFactory(private val context: Context) {
         )
         val content = when (reading.status) {
             MonitorStatus.STARTING -> "충전 상태 확인 중"
-            MonitorStatus.DISCHARGING -> "방전 중"
+            MonitorStatus.DISCHARGING -> reading.powerWatts?.let { "${PowerFormatter.watts(it)} 방전 중" } ?: "방전 중"
             MonitorStatus.CHARGING -> "${PowerFormatter.watts(reading.powerWatts)} 충전 중"
             MonitorStatus.FULL -> "충전 완료 · ${reading.sample?.levelPercent ?: 100}%"
             MonitorStatus.MEASUREMENT_UNAVAILABLE -> "충전 중 · 전류 측정 불가"
