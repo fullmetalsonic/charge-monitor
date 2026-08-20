@@ -30,7 +30,7 @@ class ChargeNotificationFactory(private val context: Context) {
             MonitorStatus.DISABLED -> context.getString(R.string.status_disabled)
         }
         return NotificationCompat.Builder(context, NotificationChannelManager.CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_lock_idle_charging)
+            .setSmallIcon(R.drawable.ic_notification_plug)
             .setContentTitle(context.getString(R.string.app_name))
             .setContentText(content)
             .setStyle(NotificationCompat.BigTextStyle().bigText(content))
