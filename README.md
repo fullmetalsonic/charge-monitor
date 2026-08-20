@@ -22,4 +22,5 @@
 - Android 14(API 34) 이상, Android 17(API 37) 대상
 - Android Gradle Plugin 9.1.1 / Gradle 9.3.1 / JDK 17
 - Windows 한글 경로에서는 Gradle의 단위 테스트 워커가 실패할 수 있다. Android Studio에서 열거나, 임시 ASCII 경로에서 `gradlew.bat test assembleDebug lintDebug`를 실행한다.
-- 디버그 APK: `app/build/outputs/apk/debug/app-debug.apk`
+- 공개 릴리스 APK: GitHub Releases의 `ChargeMonitor-v*.apk`
+- 개발용 디버그 APK: `app/build/outputs/apk/debug/app-debug.apk`

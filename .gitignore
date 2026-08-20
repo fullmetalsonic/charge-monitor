@@ -5,6 +5,8 @@
 .adb-home/
 .android-user/
 .kotlin/
+.signing/
+release/
 .tools/
 local.properties
 *.iml
