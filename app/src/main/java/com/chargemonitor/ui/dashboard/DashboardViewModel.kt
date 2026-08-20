@@ -6,26 +6,39 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.chargemonitor.data.repository.ChargeMonitorRepository
 import com.chargemonitor.data.repository.SettingsRepository
-import com.chargemonitor.service.MonitoringServiceController
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class DashboardViewModel(
     private val monitorRepository: ChargeMonitorRepository,
     private val settingsRepository: SettingsRepository,
-    private val startMonitoring: () -> Unit,
+    private val startMonitoring: () -> Boolean,
     private val stopMonitoring: () -> Unit,
 ) : ViewModel() {
     val reading = monitorRepository.reading
     val autoMonitoringEnabled = settingsRepository.autoMonitoringEnabled
-    val statusBarWattEnabled = settingsRepository.statusBarWattEnabled
     val trendRecordingEnabled = settingsRepository.trendRecordingEnabled
+    private val _monitoringStartFailed = MutableStateFlow(false)
+    val monitoringStartFailed = _monitoringStartFailed.asStateFlow()
 
-    fun setAutoMonitoringEnabled(enabled: Boolean) {
-        settingsRepository.setAutoMonitoringEnabled(enabled)
-        if (enabled) startMonitoring() else stopMonitoring()
+    init {
+        if (settingsRepository.isAutoMonitoringEnabled()) {
+            val started = startMonitoring()
+            _monitoringStartFailed.value = !started
+            if (!started) settingsRepository.setAutoMonitoringEnabled(false)
+        }
     }
 
-    fun setStatusBarWattEnabled(enabled: Boolean) {
-        settingsRepository.setStatusBarWattEnabled(enabled)
+    fun setAutoMonitoringEnabled(enabled: Boolean) {
+        if (enabled) {
+            val started = startMonitoring()
+            settingsRepository.setAutoMonitoringEnabled(started)
+            _monitoringStartFailed.value = !started
+        } else {
+            settingsRepository.setAutoMonitoringEnabled(false)
+            _monitoringStartFailed.value = false
+            stopMonitoring()
+        }
     }
 
     fun setTrendRecordingEnabled(enabled: Boolean) {
@@ -36,7 +49,7 @@ class DashboardViewModel(
         fun factory(
             monitorRepository: ChargeMonitorRepository,
             settingsRepository: SettingsRepository,
-            startMonitoring: () -> Unit,
+            startMonitoring: () -> Boolean,
             stopMonitoring: () -> Unit,
         ): ViewModelProvider.Factory = viewModelFactory {
             initializer { DashboardViewModel(monitorRepository, settingsRepository, startMonitoring, stopMonitoring) }

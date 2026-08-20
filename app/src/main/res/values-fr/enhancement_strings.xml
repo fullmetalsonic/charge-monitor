@@ -1,0 +1,4 @@
+<resources>
+    <string name="diagnostic_power">Puissance de charge</string><string name="diagnostic_voltage">Tension</string><string name="diagnostic_current">Courant</string><string name="diagnostic_battery">Batterie</string><string name="diagnostic_status">État</string><string name="diagnostic_disclaimer">La valeur affichée estime la puissance entrant dans la batterie et peut différer de la sortie du chargeur.</string>
+    <string name="today">Aujourd’hui</string><string name="trend_cursor_hint">Touchez ou faites glisser le graphique pour consulter la valeur à cette heure.</string><string name="monitoring_start_failed">Le système n’a pas pu démarrer la surveillance. Ouvrez l’application et réessayez.</string>
+</resources>

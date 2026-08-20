@@ -1,1 +1,0 @@
-<resources><string name="status_bar_watt">Status bar watts (Experimental)</string><string name="status_bar_watt_description">Shows watts in the status bar when supported on Android 16 QPR1 or later</string></resources>

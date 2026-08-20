@@ -59,6 +59,12 @@ class TrendViewModel(
         selectedDate.value = endDate
     }
 
+    fun showToday() {
+        val today = LocalDate.now()
+        visibleEndDate.value = today
+        selectedDate.value = today
+    }
+
     companion object {
         private const val DAYS_PER_SWIPE = 1L
         fun factory(historyRepository: TrendHistoryRepository): ViewModelProvider.Factory = viewModelFactory {

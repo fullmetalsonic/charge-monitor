@@ -68,6 +68,7 @@ fun TrendScreen(viewModel: TrendViewModel) {
         onSelectDate = viewModel::selectDate,
         onShowPreviousDay = viewModel::showPreviousDay,
         onShowNextDay = viewModel::showNextDay,
+        onShowToday = viewModel::showToday,
     )
 }
 
@@ -77,6 +78,7 @@ private fun TrendContent(
     onSelectDate: (LocalDate) -> Unit,
     onShowPreviousDay: () -> Unit,
     onShowNextDay: () -> Unit,
+    onShowToday: () -> Unit,
 ) {
     val summary = state.summary
     var selectedBucket by remember(summary.date) { mutableStateOf<Int?>(null) }
@@ -91,7 +93,7 @@ private fun TrendContent(
     ) {
         Text(stringResource(R.string.trend_history), style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(20.dp))
-        DateStrip(state.recentDates, state.selectedDate, onSelectDate, onShowPreviousDay, onShowNextDay)
+        DateStrip(state.recentDates, state.selectedDate, onSelectDate, onShowPreviousDay, onShowNextDay, onShowToday)
         Spacer(Modifier.height(26.dp))
         Text(stringResource(R.string.battery_flow), style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(12.dp))
@@ -109,6 +111,8 @@ private fun TrendContent(
                     DayTimelineLabels()
                     Spacer(Modifier.height(10.dp))
                     Legend()
+                    Spacer(Modifier.height(10.dp))
+                    Text(stringResource(R.string.trend_cursor_hint), color = Muted, style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
@@ -125,6 +129,10 @@ private fun TrendContent(
             EmptyTrendState()
         } else {
             PowerChart(summary.records, summary.peakWatts, selectedBucket) { selectedBucket = it }
+            selectedBucket?.let { bucket ->
+                Spacer(Modifier.height(10.dp))
+                TrendCursorInfo(bucket, selectedRecord)
+            }
             Spacer(Modifier.height(8.dp))
             Text(stringResource(R.string.trend_average_note), color = Muted, style = MaterialTheme.typography.bodySmall)
         }
@@ -138,6 +146,7 @@ private fun DateStrip(
     onSelectDate: (LocalDate) -> Unit,
     onShowPreviousDay: () -> Unit,
     onShowNextDay: () -> Unit,
+    onShowToday: () -> Unit,
 ) {
     var totalDrag by remember { mutableStateOf(0f) }
     Row(
@@ -148,8 +157,8 @@ private fun DateStrip(
                     onHorizontalDrag = { _, dragAmount -> totalDrag += dragAmount },
                     onDragEnd = {
                         when {
-                            totalDrag <= -SWIPE_THRESHOLD -> onShowNextDay()
-                            totalDrag >= SWIPE_THRESHOLD -> onShowPreviousDay()
+                            totalDrag <= -SWIPE_THRESHOLD -> onShowPreviousDay()
+                            totalDrag >= SWIPE_THRESHOLD -> onShowNextDay()
                         }
                         totalDrag = 0f
                     },
@@ -178,6 +187,16 @@ private fun DateStrip(
                 }
             }
         }
+    }
+    if (selectedDate != LocalDate.now()) {
+        Spacer(Modifier.height(12.dp))
+        Text(
+            stringResource(R.string.today),
+            modifier = Modifier.fillMaxWidth().clickable(onClick = onShowToday).padding(vertical = 10.dp),
+            color = Lime,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleSmall,
+        )
     }
 }
 

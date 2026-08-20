@@ -55,13 +55,14 @@ class ChargePowerTileService : TileService() {
 
     private fun toggleMonitoring() {
         val enableMonitoring = !container.settingsRepository.isAutoMonitoringEnabled()
-        container.settingsRepository.setAutoMonitoringEnabled(enableMonitoring)
         if (enableMonitoring) {
-            MonitoringServiceController.start(this)
+            val started = MonitoringServiceController.start(this)
+            container.settingsRepository.setAutoMonitoringEnabled(started)
         } else {
+            container.settingsRepository.setAutoMonitoringEnabled(false)
             MonitoringServiceController.stop(this)
         }
-        render(createTileContent(container.chargeMonitorRepository.reading.value, enableMonitoring))
+        render(createTileContent(container.chargeMonitorRepository.reading.value, container.settingsRepository.isAutoMonitoringEnabled()))
     }
 
     private fun render(content: TileContent) {

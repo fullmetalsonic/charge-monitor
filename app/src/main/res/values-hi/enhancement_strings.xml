@@ -1,0 +1,4 @@
+<resources>
+    <string name="diagnostic_power">चार्जिंग पावर</string><string name="diagnostic_voltage">वोल्टेज</string><string name="diagnostic_current">करंट</string><string name="diagnostic_battery">बैटरी</string><string name="diagnostic_status">स्थिति</string><string name="diagnostic_disclaimer">दिखाया गया मान बैटरी में जाने वाली पावर का अनुमान है और चार्जर के आउटपुट से अलग हो सकता है।</string>
+    <string name="today">आज</string><string name="trend_cursor_hint">उस समय का रिकॉर्ड देखने के लिए चार्ट पर टैप करें या खींचें।</string><string name="monitoring_start_failed">सिस्टम निगरानी शुरू नहीं कर सका। ऐप खोलकर फिर कोशिश करें।</string>
+</resources>

@@ -1,0 +1,4 @@
+<resources>
+    <string name="diagnostic_power">طاقة الشحن</string><string name="diagnostic_voltage">الجهد</string><string name="diagnostic_current">التيار</string><string name="diagnostic_battery">البطارية</string><string name="diagnostic_status">الحالة</string><string name="diagnostic_disclaimer">القيمة المعروضة تقدير للطاقة الداخلة إلى البطارية وقد تختلف عن خرج الشاحن.</string>
+    <string name="today">اليوم</string><string name="trend_cursor_hint">المس الرسم البياني أو اسحبه لعرض السجل في ذلك الوقت.</string><string name="monitoring_start_failed">تعذر على النظام بدء المراقبة. افتح التطبيق وحاول مرة أخرى.</string>
+</resources>

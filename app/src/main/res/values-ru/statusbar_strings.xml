@@ -1,1 +1,0 @@
-<resources><string name="status_bar_watt">Ватты в строке состояния (экспериментально)</string><string name="status_bar_watt_description">Показывает ватты в строке состояния, если это поддерживает Android 16 QPR1 или новее</string></resources>

@@ -1,0 +1,4 @@
+<resources>
+    <string name="diagnostic_power">Ladeleistung</string><string name="diagnostic_voltage">Spannung</string><string name="diagnostic_current">Strom</string><string name="diagnostic_battery">Akku</string><string name="diagnostic_status">Status</string><string name="diagnostic_disclaimer">Der angezeigte Wert schätzt die in den Akku fließende Leistung und kann von der Ladegerätleistung abweichen.</string>
+    <string name="today">Heute</string><string name="trend_cursor_hint">Tippen oder ziehen Sie im Diagramm, um den Wert zu dieser Zeit anzuzeigen.</string><string name="monitoring_start_failed">Das System konnte die Überwachung nicht starten. Öffnen Sie die App und versuchen Sie es erneut.</string>
+</resources>

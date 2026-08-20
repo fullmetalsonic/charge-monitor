@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import androidx.core.app.ServiceCompat
 import com.chargemonitor.app.ChargeMonitorApplication
 import com.chargemonitor.data.model.ChargeReading
@@ -13,6 +14,7 @@ import com.chargemonitor.domain.CalculateChargingPower
 import com.chargemonitor.domain.ObserveChargingState
 import com.chargemonitor.domain.StabilizeMonitorStatus
 import com.chargemonitor.domain.StabilizePowerReading
+import com.chargemonitor.domain.MonitorUpdatePolicy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,8 +31,10 @@ class ChargeMonitoringService : Service() {
     private val stabilizePowerReading = StabilizePowerReading()
     private val observeChargingState = ObserveChargingState()
     private val stabilizeMonitorStatus = StabilizeMonitorStatus()
+    private val monitorUpdatePolicy = MonitorUpdatePolicy()
 
     private val container by lazy { (application as ChargeMonitorApplication).container }
+    private val powerManager by lazy { getSystemService(PowerManager::class.java) }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startAsForeground(ChargeReading(status = MonitorStatus.STARTING))
@@ -47,17 +51,15 @@ class ChargeMonitoringService : Service() {
         ServiceCompat.startForeground(
             this,
             NOTIFICATION_ID,
-            container.notificationFactory.create(
-                reading = reading,
-                requestStatusBarWatt = container.settingsRepository.isStatusBarWattEnabled(),
-            ),
+            container.notificationFactory.create(reading),
             type,
         )
     }
 
     private fun startMonitoring() {
         monitorJob = scope.launch {
-            while (isActive) {
+            try {
+                while (isActive) {
                 val sample = container.batteryDataSource.readSample()
                 val rawPower = calculateChargingPower(sample.voltageMillivolts, sample.currentMicroAmps)
                 val stablePower = stabilizePowerReading.add(rawPower)
@@ -67,11 +69,16 @@ class ChargeMonitoringService : Service() {
                     status = stabilizeMonitorStatus.update(observeChargingState(sample, stablePower)),
                 )
                 container.chargeMonitorRepository.publish(reading)
-                if (container.settingsRepository.isTrendRecordingEnabled()) {
-                    container.trendHistoryRepository.record(reading)
+                    if (container.settingsRepository.isTrendRecordingEnabled()) {
+                        container.trendHistoryRepository.record(reading)
+                    }
+                    if (monitorUpdatePolicy.shouldRefreshNotification(reading)) {
+                        startAsForeground(reading)
+                    }
+                    delay(monitorUpdatePolicy.nextSampleDelayMillis(reading.status, powerManager.isInteractive))
                 }
-                startAsForeground(reading)
-                delay(UPDATE_INTERVAL_MILLIS)
+            } finally {
+                container.trendHistoryRepository.flush()
             }
         }
     }
@@ -87,6 +94,5 @@ class ChargeMonitoringService : Service() {
 
     companion object {
         private const val NOTIFICATION_ID = 1001
-        private const val UPDATE_INTERVAL_MILLIS = 2_000L
     }
 }

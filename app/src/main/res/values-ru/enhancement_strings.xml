@@ -1,0 +1,4 @@
+<resources>
+    <string name="diagnostic_power">Мощность зарядки</string><string name="diagnostic_voltage">Напряжение</string><string name="diagnostic_current">Ток</string><string name="diagnostic_battery">Батарея</string><string name="diagnostic_status">Состояние</string><string name="diagnostic_disclaimer">Показанное значение оценивает мощность, поступающую в батарею, и может отличаться от выходной мощности зарядного устройства.</string>
+    <string name="today">Сегодня</string><string name="trend_cursor_hint">Коснитесь или проведите по графику, чтобы увидеть запись за это время.</string><string name="monitoring_start_failed">Системе не удалось запустить мониторинг. Откройте приложение и повторите попытку.</string>
+</resources>

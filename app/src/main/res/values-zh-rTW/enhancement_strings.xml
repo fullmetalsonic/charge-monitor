@@ -1,0 +1,4 @@
+<resources>
+    <string name="diagnostic_power">充電功率</string><string name="diagnostic_voltage">電壓</string><string name="diagnostic_current">電流</string><string name="diagnostic_battery">電池</string><string name="diagnostic_status">狀態</string><string name="diagnostic_disclaimer">顯示值是進入電池功率的估算值，可能與充電器輸出不同。</string>
+    <string name="today">今天</string><string name="trend_cursor_hint">輕觸或拖曳圖表可查看該時間的記錄。</string><string name="monitoring_start_failed">系統無法啟動監測。請開啟應用程式後重試。</string>
+</resources>

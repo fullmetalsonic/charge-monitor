@@ -8,9 +8,10 @@ import com.chargemonitor.data.model.BatterySample
 
 class AndroidBatteryDataSource(private val context: Context) : BatteryDataSource {
     private val batteryManager = context.getSystemService(BatteryManager::class.java)
+    private val batteryChangedFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
 
     override fun readSample(): BatterySample {
-        val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        val intent = context.registerReceiver(null, batteryChangedFilter)
         val status = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, BatteryManager.BATTERY_STATUS_UNKNOWN)
             ?: BatteryManager.BATTERY_STATUS_UNKNOWN
         val plugged = intent?.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) ?: 0

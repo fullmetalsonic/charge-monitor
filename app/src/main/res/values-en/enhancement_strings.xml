@@ -1,0 +1,5 @@
+<resources>
+    <string name="today">Today</string>
+    <string name="trend_cursor_hint">Tap or drag a chart to check the record for that time.</string>
+    <string name="monitoring_start_failed">The system could not start monitoring. Open the app and try again.</string>
+</resources>

@@ -1,9 +1,8 @@
 package com.chargemonitor.ui.dashboard
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,10 +18,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BatteryChargingFull
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,16 +48,15 @@ import com.chargemonitor.util.PowerFormatter
 fun DashboardScreen(viewModel: DashboardViewModel, onOpenDiagnostic: () -> Unit, onOpenTrend: () -> Unit) {
     val reading by viewModel.reading.collectAsStateWithLifecycle()
     val enabled by viewModel.autoMonitoringEnabled.collectAsStateWithLifecycle()
-    val statusBarWattEnabled by viewModel.statusBarWattEnabled.collectAsStateWithLifecycle()
     val trendRecordingEnabled by viewModel.trendRecordingEnabled.collectAsStateWithLifecycle()
+    val monitoringStartFailed by viewModel.monitoringStartFailed.collectAsStateWithLifecycle()
     DashboardContent(
         reading = reading,
         enabled = enabled,
         onEnabledChange = viewModel::setAutoMonitoringEnabled,
-        statusBarWattEnabled = statusBarWattEnabled,
-        onStatusBarWattEnabledChange = viewModel::setStatusBarWattEnabled,
         trendRecordingEnabled = trendRecordingEnabled,
         onTrendRecordingEnabledChange = viewModel::setTrendRecordingEnabled,
+        monitoringStartFailed = monitoringStartFailed,
         onOpenDiagnostic = onOpenDiagnostic,
         onOpenTrend = onOpenTrend,
     )
@@ -71,97 +67,125 @@ private fun DashboardContent(
     reading: ChargeReading,
     enabled: Boolean,
     onEnabledChange: (Boolean) -> Unit,
-    statusBarWattEnabled: Boolean,
-    onStatusBarWattEnabledChange: (Boolean) -> Unit,
     trendRecordingEnabled: Boolean,
     onTrendRecordingEnabledChange: (Boolean) -> Unit,
+    monitoringStartFailed: Boolean,
     onOpenDiagnostic: () -> Unit,
     onOpenTrend: () -> Unit,
 ) {
     val sample = reading.sample
-    Column(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .verticalScroll(rememberScrollState())
             .padding(horizontal = 28.dp, vertical = 16.dp),
+    ) {
+        if (maxWidth > maxHeight) {
+            DashboardLandscape(
+                reading = reading,
+                batteryPercent = sample?.levelPercent,
+                enabled = enabled,
+                onEnabledChange = onEnabledChange,
+                trendRecordingEnabled = trendRecordingEnabled,
+                onTrendRecordingEnabledChange = onTrendRecordingEnabledChange,
+                monitoringStartFailed = monitoringStartFailed,
+                onOpenTrend = onOpenTrend,
+                onOpenDiagnostic = onOpenDiagnostic,
+            )
+        } else {
+            DashboardPortrait(
+                reading = reading,
+                batteryPercent = sample?.levelPercent,
+                enabled = enabled,
+                onEnabledChange = onEnabledChange,
+                trendRecordingEnabled = trendRecordingEnabled,
+                onTrendRecordingEnabledChange = onTrendRecordingEnabledChange,
+                monitoringStartFailed = monitoringStartFailed,
+                onOpenTrend = onOpenTrend,
+                onOpenDiagnostic = onOpenDiagnostic,
+            )
+        }
+    }
+}
+
+@Composable
+private fun DashboardPortrait(
+    reading: ChargeReading,
+    batteryPercent: Int?,
+    enabled: Boolean,
+    onEnabledChange: (Boolean) -> Unit,
+    trendRecordingEnabled: Boolean,
+    onTrendRecordingEnabledChange: (Boolean) -> Unit,
+    monitoringStartFailed: Boolean,
+    onOpenTrend: () -> Unit,
+    onOpenDiagnostic: () -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(Modifier.height(12.dp))
-        PowerGauge(reading = reading, batteryPercent = sample?.levelPercent)
+        PowerGauge(reading = reading, batteryPercent = batteryPercent)
         Spacer(Modifier.height(18.dp))
-        Text(
-            text = listOfNotNull(
-                sample?.levelPercent?.let { "$it%" },
-                PowerFormatter.volts(sample?.voltageMillivolts),
-                PowerFormatter.amps(sample?.currentMicroAmps),
-            ).joinToString("  ·  "),
-            color = Muted,
-            style = MaterialTheme.typography.titleMedium,
-        )
+        MeasurementSummary(reading, batteryPercent)
         Spacer(Modifier.height(28.dp))
-        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 18.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Column {
-                Text(stringResource(R.string.auto_monitoring), style = MaterialTheme.typography.titleLarge)
-                Spacer(Modifier.height(5.dp))
-                Text(stringResource(R.string.monitoring_description), color = Muted, style = MaterialTheme.typography.bodyMedium)
-            }
-            Switch(checked = enabled, onCheckedChange = onEnabledChange)
-        }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(R.string.status_bar_watt), style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.height(5.dp))
-                Text(stringResource(R.string.status_bar_watt_description), color = Muted, style = MaterialTheme.typography.bodyMedium)
-            }
-            Switch(
-                checked = statusBarWattEnabled,
-                onCheckedChange = onStatusBarWattEnabledChange,
-            )
-        }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(R.string.trend_recording), style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.height(5.dp))
-                Text(stringResource(R.string.trend_recording_description), color = Muted, style = MaterialTheme.typography.bodyMedium)
-            }
-            Switch(
-                checked = trendRecordingEnabled,
-                onCheckedChange = onTrendRecordingEnabledChange,
-            )
-        }
-        Text(
-            text = "${stringResource(R.string.trend_history)}  ›",
-            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp).clickable(onClick = onOpenTrend),
-            color = Muted,
-            style = MaterialTheme.typography.titleMedium,
-        )
-        Text(
-            text = "${stringResource(R.string.diagnostics)}  ›",
-            modifier = Modifier.padding(top = 8.dp, bottom = 20.dp).clickable(onClick = onOpenDiagnostic),
-            color = Muted,
-            style = MaterialTheme.typography.titleMedium,
+        DashboardControls(
+            enabled, onEnabledChange, trendRecordingEnabled, onTrendRecordingEnabledChange,
+            monitoringStartFailed, onOpenTrend, onOpenDiagnostic,
         )
     }
 }
 
 @Composable
-private fun PowerGauge(reading: ChargeReading, batteryPercent: Int?) {
+private fun DashboardLandscape(
+    reading: ChargeReading,
+    batteryPercent: Int?,
+    enabled: Boolean,
+    onEnabledChange: (Boolean) -> Unit,
+    trendRecordingEnabled: Boolean,
+    onTrendRecordingEnabledChange: (Boolean) -> Unit,
+    monitoringStartFailed: Boolean,
+    onOpenTrend: () -> Unit,
+    onOpenDiagnostic: () -> Unit,
+) {
+    Row(Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            PowerGauge(reading, batteryPercent, 250.dp)
+            Spacer(Modifier.height(8.dp))
+            MeasurementSummary(reading, batteryPercent)
+        }
+        Spacer(Modifier.size(28.dp))
+        Column(
+            modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            DashboardControls(
+                enabled, onEnabledChange, trendRecordingEnabled, onTrendRecordingEnabledChange,
+                monitoringStartFailed, onOpenTrend, onOpenDiagnostic,
+            )
+        }
+    }
+}
+
+@Composable
+private fun MeasurementSummary(reading: ChargeReading, batteryPercent: Int?) {
+    val sample = reading.sample
+    Text(
+        text = listOfNotNull(
+            batteryPercent?.let { "$it%" },
+            PowerFormatter.volts(sample?.voltageMillivolts),
+            PowerFormatter.amps(sample?.currentMicroAmps),
+        ).joinToString("  ·  "),
+        color = Muted,
+        style = MaterialTheme.typography.titleMedium,
+    )
+}
+
+@Composable
+private fun PowerGauge(reading: ChargeReading, batteryPercent: Int?, gaugeSize: androidx.compose.ui.unit.Dp = 310.dp) {
     val power = reading.powerWatts
     val status = when (reading.status) {
         MonitorStatus.STARTING -> stringResource(R.string.status_checking)
@@ -172,7 +196,7 @@ private fun PowerGauge(reading: ChargeReading, batteryPercent: Int?) {
         MonitorStatus.IDLE -> stringResource(R.string.status_idle)
         MonitorStatus.DISABLED -> stringResource(R.string.status_disabled)
     }
-    Box(modifier = Modifier.size(310.dp), contentAlignment = Alignment.Center) {
+    Box(modifier = Modifier.size(gaugeSize), contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val stroke = 14.dp.toPx()
             val inset = stroke / 2

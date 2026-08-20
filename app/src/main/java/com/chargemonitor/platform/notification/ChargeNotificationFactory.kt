@@ -12,7 +12,7 @@ import com.chargemonitor.ui.MainActivity
 import com.chargemonitor.util.PowerFormatter
 
 class ChargeNotificationFactory(private val context: Context) {
-    fun create(reading: ChargeReading, requestStatusBarWatt: Boolean): Notification {
+    fun create(reading: ChargeReading): Notification {
         NotificationChannelManager.ensureCreated(context)
         val launchIntent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
@@ -30,22 +30,6 @@ class ChargeNotificationFactory(private val context: Context) {
             MonitorStatus.IDLE -> context.getString(R.string.status_idle)
             MonitorStatus.DISABLED -> context.getString(R.string.status_disabled)
         }
-        if (requestStatusBarWatt && LiveUpdateSupport.canRequestPromotedOngoing()) {
-            return Notification.Builder(context, NotificationChannelManager.CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.ic_lock_idle_charging)
-                .setContentTitle(context.getString(R.string.app_name))
-                .setContentText(content)
-                .setStyle(Notification.BigTextStyle().bigText(content))
-                .setContentIntent(pendingIntent)
-                .setVisibility(Notification.VISIBILITY_PUBLIC)
-                .setCategory(Notification.CATEGORY_STATUS)
-                .setOngoing(true)
-                .setOnlyAlertOnce(true)
-                .setRequestPromotedOngoing(true)
-                .setShortCriticalText(shortStatusBarText(reading, content))
-                .build()
-        }
-
         return NotificationCompat.Builder(context, NotificationChannelManager.CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_lock_idle_charging)
             .setContentTitle(context.getString(R.string.app_name))
@@ -60,14 +44,4 @@ class ChargeNotificationFactory(private val context: Context) {
             .build()
     }
 
-    private fun shortStatusBarText(reading: ChargeReading, fallback: String): String = when (reading.status) {
-        MonitorStatus.CHARGING,
-        MonitorStatus.DISCHARGING -> reading.powerWatts?.let(PowerFormatter::watts) ?: fallback
-        MonitorStatus.FULL -> context.getString(R.string.charge_complete)
-        else -> fallback
-    }.take(MAX_STATUS_BAR_TEXT_LENGTH)
-
-    private companion object {
-        const val MAX_STATUS_BAR_TEXT_LENGTH = 7
-    }
 }

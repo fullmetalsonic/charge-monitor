@@ -10,7 +10,8 @@ class BootCompletedReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val application = context.applicationContext as ChargeMonitorApplication
         if (application.container.settingsRepository.autoMonitoringEnabled.value) {
-            MonitoringServiceController.start(context)
+            val started = MonitoringServiceController.start(context)
+            if (!started) application.container.settingsRepository.setAutoMonitoringEnabled(false)
         }
     }
 }

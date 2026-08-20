@@ -1,0 +1,4 @@
+<resources>
+    <string name="diagnostic_power">Potencia de carga</string><string name="diagnostic_voltage">Voltaje</string><string name="diagnostic_current">Corriente</string><string name="diagnostic_battery">Batería</string><string name="diagnostic_status">Estado</string><string name="diagnostic_disclaimer">El valor mostrado estima la potencia que entra en la batería y puede diferir de la salida del cargador.</string>
+    <string name="today">Hoy</string><string name="trend_cursor_hint">Toque o arrastre el gráfico para consultar el registro de esa hora.</string><string name="monitoring_start_failed">El sistema no pudo iniciar la monitorización. Abra la aplicación e inténtelo de nuevo.</string>
+</resources>

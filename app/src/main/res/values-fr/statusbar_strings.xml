@@ -1,1 +1,0 @@
-<resources><string name="status_bar_watt">Watts dans la barre d’état (expérimental)</string><string name="status_bar_watt_description">Affiche les watts dans la barre d’état si Android 16 QPR1 ou version ultérieure le permet</string></resources>

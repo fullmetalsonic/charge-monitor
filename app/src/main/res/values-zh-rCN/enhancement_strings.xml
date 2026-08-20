@@ -1,0 +1,4 @@
+<resources>
+    <string name="diagnostic_power">充电功率</string><string name="diagnostic_voltage">电压</string><string name="diagnostic_current">电流</string><string name="diagnostic_battery">电池</string><string name="diagnostic_status">状态</string><string name="diagnostic_disclaimer">显示值是进入电池功率的估算值，可能与充电器输出不同。</string>
+    <string name="today">今天</string><string name="trend_cursor_hint">轻触或拖动图表可查看该时间的记录。</string><string name="monitoring_start_failed">系统无法启动监测。请打开应用后重试。</string>
+</resources>

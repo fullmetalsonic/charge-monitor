@@ -1,6 +1,7 @@
 package com.chargemonitor.data.repository
 
 import android.content.Context
+import android.util.AtomicFile
 import com.chargemonitor.data.model.ChargeReading
 import com.chargemonitor.data.model.MonitorStatus
 import com.chargemonitor.data.model.TrendDirection
@@ -11,10 +12,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.File
 
 class TrendHistoryRepository(context: Context) {
-    private val storageFile = File(context.filesDir, FILE_NAME)
+    private val storageFile = AtomicFile(context.filesDir.resolve(FILE_NAME))
     private val lock = Any()
     private val aggregateTrendRecord = AggregateTrendRecord()
     private val _records = MutableStateFlow(loadRecords())
@@ -32,18 +32,22 @@ class TrendHistoryRepository(context: Context) {
                 powerWatts = reading.powerWatts,
                 direction = reading.status.toTrendDirection(),
             )
-            val updated = if (current.lastOrNull()?.capturedAtMillis == bucketStartMillis) {
+            val isNewBucket = current.lastOrNull()?.capturedAtMillis != bucketStartMillis
+            val updated = if (!isNewBucket) {
                 current.dropLast(1) + aggregateTrendRecord(current.last(), next)
             } else {
                 current + next
             }.filter { it.capturedAtMillis >= bucketStartMillis - RETENTION_MILLIS }
-            persist(updated)
             _records.value = updated
+            if (isNewBucket) persist(updated)
         }
     }
 
+    /** Persists the current five-minute aggregate when monitoring stops. */
+    fun flush() = synchronized(lock) { persist(_records.value) }
+
     private fun loadRecords(): List<TrendRecord> = runCatching {
-        val array = JSONArray(storageFile.readText())
+        val array = JSONArray(storageFile.openRead().bufferedReader().use { it.readText() })
         buildList {
             for (index in 0 until array.length()) {
                 val item = array.getJSONObject(index)
@@ -73,7 +77,14 @@ class TrendHistoryRepository(context: Context) {
                 put("powerSampleCount", record.powerSampleCount)
             })
         }
-        storageFile.writeText(array.toString())
+        val output = storageFile.startWrite()
+        try {
+            output.write(array.toString().toByteArray())
+            storageFile.finishWrite(output)
+        } catch (exception: Exception) {
+            storageFile.failWrite(output)
+            throw exception
+        }
     }
 
     private fun MonitorStatus.toTrendDirection(): TrendDirection = when (this) {
