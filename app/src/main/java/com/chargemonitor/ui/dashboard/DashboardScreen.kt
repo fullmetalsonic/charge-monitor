@@ -114,7 +114,7 @@ private fun PowerGauge(reading: ChargeReading, batteryPercent: Int?) {
         MonitorStatus.STARTING -> stringResource(R.string.status_checking)
         MonitorStatus.DISCHARGING -> stringResource(R.string.status_discharging)
         MonitorStatus.CHARGING -> stringResource(R.string.status_charging)
-        MonitorStatus.FULL -> stringResource(R.string.status_full)
+        MonitorStatus.FULL -> stringResource(R.string.charge_complete)
         MonitorStatus.MEASUREMENT_UNAVAILABLE -> stringResource(R.string.status_unavailable)
         MonitorStatus.IDLE -> stringResource(R.string.status_idle)
         MonitorStatus.DISABLED -> stringResource(R.string.status_disabled)
