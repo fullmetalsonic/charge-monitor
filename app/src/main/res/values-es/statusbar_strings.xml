@@ -1,0 +1,1 @@
+<resources><string name="status_bar_watt">Vatios en la barra de estado (experimental)</string><string name="status_bar_watt_description">Muestra vatios en la barra de estado si Android 16 QPR1 o posterior lo admite</string></resources>

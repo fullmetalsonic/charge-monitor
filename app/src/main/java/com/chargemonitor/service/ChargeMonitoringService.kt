@@ -47,7 +47,10 @@ class ChargeMonitoringService : Service() {
         ServiceCompat.startForeground(
             this,
             NOTIFICATION_ID,
-            container.notificationFactory.create(reading),
+            container.notificationFactory.create(
+                reading = reading,
+                requestStatusBarWatt = container.settingsRepository.isStatusBarWattEnabled(),
+            ),
             type,
         )
     }

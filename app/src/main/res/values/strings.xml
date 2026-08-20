@@ -2,6 +2,8 @@
     <string name="app_name">충전 모니터</string>
     <string name="auto_monitoring">자동 모니터링</string>
     <string name="monitoring_description">충전·방전 상태를 알림으로 표시</string>
+    <string name="status_bar_watt">상태바 와트 표시 (실험 기능)</string>
+    <string name="status_bar_watt_description">Android 16 QPR1 이상에서 지원 시 상태바에 와트를 표시</string>
     <string name="diagnostics">상세 진단</string>
     <string name="diagnostic_power" translatable="false">충전 전력</string>
     <string name="diagnostic_voltage" translatable="false">전압</string>

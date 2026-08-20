@@ -49,10 +49,13 @@ import com.chargemonitor.util.PowerFormatter
 fun DashboardScreen(viewModel: DashboardViewModel, onOpenDiagnostic: () -> Unit) {
     val reading by viewModel.reading.collectAsStateWithLifecycle()
     val enabled by viewModel.autoMonitoringEnabled.collectAsStateWithLifecycle()
+    val statusBarWattEnabled by viewModel.statusBarWattEnabled.collectAsStateWithLifecycle()
     DashboardContent(
         reading = reading,
         enabled = enabled,
         onEnabledChange = viewModel::setAutoMonitoringEnabled,
+        statusBarWattEnabled = statusBarWattEnabled,
+        onStatusBarWattEnabledChange = viewModel::setStatusBarWattEnabled,
         onOpenDiagnostic = onOpenDiagnostic,
     )
 }
@@ -62,6 +65,8 @@ private fun DashboardContent(
     reading: ChargeReading,
     enabled: Boolean,
     onEnabledChange: (Boolean) -> Unit,
+    statusBarWattEnabled: Boolean,
+    onStatusBarWattEnabledChange: (Boolean) -> Unit,
     onOpenDiagnostic: () -> Unit,
 ) {
     val sample = reading.sample
@@ -97,6 +102,22 @@ private fun DashboardContent(
                 Text(stringResource(R.string.monitoring_description), color = Muted, style = MaterialTheme.typography.bodyMedium)
             }
             Switch(checked = enabled, onCheckedChange = onEnabledChange)
+        }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.status_bar_watt), style = MaterialTheme.typography.titleMedium)
+                Spacer(Modifier.height(5.dp))
+                Text(stringResource(R.string.status_bar_watt_description), color = Muted, style = MaterialTheme.typography.bodyMedium)
+            }
+            Switch(
+                checked = statusBarWattEnabled,
+                onCheckedChange = onStatusBarWattEnabledChange,
+            )
         }
         Text(
             text = "${stringResource(R.string.diagnostics)}  ›",
