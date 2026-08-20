@@ -16,13 +16,21 @@ class ObserveChargingStateTest {
         assertEquals(MonitorStatus.CHARGING, observe(sample(isCharging = true), 25.4))
     }
 
-    private fun sample(isFull: Boolean = false, isCharging: Boolean = true) = BatterySample(
+    @Test fun `reports discharging when the charger is disconnected`() {
+        assertEquals(MonitorStatus.DISCHARGING, observe(sample(isPlugged = false), null))
+    }
+
+    private fun sample(
+        isFull: Boolean = false,
+        isCharging: Boolean = true,
+        isPlugged: Boolean = true,
+    ) = BatterySample(
         voltageMillivolts = 4_450,
         currentMicroAmps = 2_000_000,
         levelPercent = 80,
         isCharging = isCharging,
         isFull = isFull,
-        isPlugged = true,
+        isPlugged = isPlugged,
         capturedAtMillis = 0L,
     )
 }

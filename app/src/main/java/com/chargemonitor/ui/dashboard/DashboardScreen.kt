@@ -109,6 +109,8 @@ private fun DashboardContent(
 private fun PowerGauge(reading: ChargeReading, batteryPercent: Int?) {
     val power = reading.powerWatts
     val status = when (reading.status) {
+        MonitorStatus.STARTING -> "충전 상태 확인 중"
+        MonitorStatus.DISCHARGING -> "방전 중"
         MonitorStatus.CHARGING -> "충전 중"
         MonitorStatus.FULL -> "100% 충전됨"
         MonitorStatus.MEASUREMENT_UNAVAILABLE -> "전류 측정 불가"
@@ -129,6 +131,8 @@ private fun PowerGauge(reading: ChargeReading, batteryPercent: Int?) {
             Spacer(Modifier.height(14.dp))
             if (reading.status == MonitorStatus.FULL) {
                 Text("충전 완료", fontSize = 42.sp, fontWeight = FontWeight.Light)
+            } else if (reading.status == MonitorStatus.STARTING) {
+                Text("확인 중", fontSize = 42.sp, fontWeight = FontWeight.Light)
             } else if (power != null) {
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(PowerFormatter.watts(power).removeSuffix("W"), fontSize = 64.sp, fontWeight = FontWeight.Light)

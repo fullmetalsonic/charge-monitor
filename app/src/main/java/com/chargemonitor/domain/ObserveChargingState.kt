@@ -5,7 +5,7 @@ import com.chargemonitor.data.model.MonitorStatus
 
 class ObserveChargingState {
     operator fun invoke(sample: BatterySample, powerWatts: Double?): MonitorStatus = when {
-        !sample.isPlugged -> MonitorStatus.IDLE
+        !sample.isPlugged -> MonitorStatus.DISCHARGING
         sample.isFull -> MonitorStatus.FULL
         !sample.isCharging -> MonitorStatus.IDLE
         powerWatts == null -> MonitorStatus.MEASUREMENT_UNAVAILABLE

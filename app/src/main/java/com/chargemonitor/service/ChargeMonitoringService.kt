@@ -11,6 +11,7 @@ import com.chargemonitor.data.model.ChargeReading
 import com.chargemonitor.data.model.MonitorStatus
 import com.chargemonitor.domain.CalculateChargingPower
 import com.chargemonitor.domain.ObserveChargingState
+import com.chargemonitor.domain.StabilizeMonitorStatus
 import com.chargemonitor.domain.StabilizePowerReading
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,11 +28,12 @@ class ChargeMonitoringService : Service() {
     private val calculateChargingPower = CalculateChargingPower()
     private val stabilizePowerReading = StabilizePowerReading()
     private val observeChargingState = ObserveChargingState()
+    private val stabilizeMonitorStatus = StabilizeMonitorStatus()
 
     private val container by lazy { (application as ChargeMonitorApplication).container }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startAsForeground(ChargeReading(status = MonitorStatus.IDLE))
+        startAsForeground(ChargeReading(status = MonitorStatus.STARTING))
         if (monitorJob == null) startMonitoring()
         return START_STICKY
     }
@@ -59,7 +61,7 @@ class ChargeMonitoringService : Service() {
                 val reading = ChargeReading(
                     sample = sample,
                     powerWatts = stablePower,
-                    status = observeChargingState(sample, stablePower),
+                    status = stabilizeMonitorStatus.update(observeChargingState(sample, stablePower)),
                 )
                 container.chargeMonitorRepository.publish(reading)
                 startAsForeground(reading)
