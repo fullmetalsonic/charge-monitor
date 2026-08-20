@@ -7,7 +7,7 @@
     <application
         android:name=".app.ChargeMonitorApplication"
         android:allowBackup="true"
-        android:label="충전 모니터"
+        android:label="@string/app_name"
         android:theme="@style/Theme.ChargeMonitor">
         <activity
             android:name=".ui.MainActivity"

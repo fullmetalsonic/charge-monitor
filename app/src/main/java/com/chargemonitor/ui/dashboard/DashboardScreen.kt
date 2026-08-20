@@ -31,11 +31,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.chargemonitor.R
 import com.chargemonitor.data.model.ChargeReading
 import com.chargemonitor.data.model.MonitorStatus
 import com.chargemonitor.ui.design.GaugeTrack
@@ -90,14 +92,14 @@ private fun DashboardContent(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column {
-                Text("자동 모니터링", style = MaterialTheme.typography.titleLarge)
+                Text(stringResource(R.string.auto_monitoring), style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.height(5.dp))
-                Text("충전·방전 상태를 알림으로 표시", color = Muted, style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.monitoring_description), color = Muted, style = MaterialTheme.typography.bodyMedium)
             }
             Switch(checked = enabled, onCheckedChange = onEnabledChange)
         }
         Text(
-            text = "상세 진단  ›",
+            text = "${stringResource(R.string.diagnostics)}  ›",
             modifier = Modifier.padding(top = 4.dp, bottom = 8.dp).clickable(onClick = onOpenDiagnostic),
             color = Muted,
             style = MaterialTheme.typography.titleMedium,
@@ -109,13 +111,13 @@ private fun DashboardContent(
 private fun PowerGauge(reading: ChargeReading, batteryPercent: Int?) {
     val power = reading.powerWatts
     val status = when (reading.status) {
-        MonitorStatus.STARTING -> "충전 상태 확인 중"
-        MonitorStatus.DISCHARGING -> "방전 중"
-        MonitorStatus.CHARGING -> "충전 중"
-        MonitorStatus.FULL -> "100% 충전됨"
-        MonitorStatus.MEASUREMENT_UNAVAILABLE -> "전류 측정 불가"
-        MonitorStatus.IDLE -> "충전 대기 중"
-        MonitorStatus.DISABLED -> "자동 모니터링 꺼짐"
+        MonitorStatus.STARTING -> stringResource(R.string.status_checking)
+        MonitorStatus.DISCHARGING -> stringResource(R.string.status_discharging)
+        MonitorStatus.CHARGING -> stringResource(R.string.status_charging)
+        MonitorStatus.FULL -> stringResource(R.string.status_full)
+        MonitorStatus.MEASUREMENT_UNAVAILABLE -> stringResource(R.string.status_unavailable)
+        MonitorStatus.IDLE -> stringResource(R.string.status_idle)
+        MonitorStatus.DISABLED -> stringResource(R.string.status_disabled)
     }
     Box(modifier = Modifier.size(310.dp), contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -130,16 +132,16 @@ private fun PowerGauge(reading: ChargeReading, batteryPercent: Int?) {
             Icon(Icons.Outlined.BatteryChargingFull, null, tint = Lime, modifier = Modifier.size(48.dp))
             Spacer(Modifier.height(14.dp))
             if (reading.status == MonitorStatus.FULL) {
-                Text("충전 완료", fontSize = 42.sp, fontWeight = FontWeight.Light)
+                Text(stringResource(R.string.charge_complete), fontSize = 42.sp, fontWeight = FontWeight.Light)
             } else if (reading.status == MonitorStatus.STARTING) {
-                Text("확인 중", fontSize = 42.sp, fontWeight = FontWeight.Light)
+                Text(stringResource(R.string.checking), fontSize = 42.sp, fontWeight = FontWeight.Light)
             } else if (power != null) {
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(PowerFormatter.watts(power).removeSuffix("W"), fontSize = 64.sp, fontWeight = FontWeight.Light)
                     Text("W", modifier = Modifier.padding(start = 8.dp, bottom = 11.dp), fontSize = 28.sp)
                 }
             } else {
-                Text("측정 불가", fontSize = 42.sp, fontWeight = FontWeight.Light)
+                Text(stringResource(R.string.measurement_unavailable), fontSize = 42.sp, fontWeight = FontWeight.Light)
             }
             Spacer(Modifier.height(4.dp))
             Text(

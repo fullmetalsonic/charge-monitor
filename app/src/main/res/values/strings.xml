@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">충전 모니터</string>
+    <string name="auto_monitoring">자동 모니터링</string>
+    <string name="monitoring_description">충전·방전 상태를 알림으로 표시</string>
+    <string name="diagnostics">상세 진단</string>
+    <string name="diagnostic_power" translatable="false">충전 전력</string>
+    <string name="diagnostic_voltage" translatable="false">전압</string>
+    <string name="diagnostic_current" translatable="false">전류</string>
+    <string name="diagnostic_battery" translatable="false">배터리</string>
+    <string name="diagnostic_status" translatable="false">상태</string>
+    <string name="diagnostic_disclaimer" translatable="false">표시값은 배터리에 들어가는 전력 추정값이며, 충전기 출력값과 다를 수 있습니다.</string>
+    <string name="status_checking">충전 상태 확인 중</string>
+    <string name="status_discharging">방전 중</string>
+    <string name="status_charging">충전 중</string>
+    <string name="status_full">100%% 충전됨</string>
+    <string name="status_unavailable">전류 측정 불가</string>
+    <string name="status_idle">충전 대기 중</string>
+    <string name="status_disabled">자동 모니터링 꺼짐</string>
+    <string name="charge_complete">충전 완료</string>
+    <string name="checking">확인 중</string>
+    <string name="measurement_unavailable">측정 불가</string>
+    <string name="notification_discharging">%1$s 방전 중</string>
+    <string name="notification_charging">%1$s 충전 중</string>
+    <string name="notification_full">충전 완료 · %1$d%%</string>
+</resources>

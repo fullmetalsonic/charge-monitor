@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import com.chargemonitor.R
 import com.chargemonitor.data.model.ChargeReading
 import com.chargemonitor.data.model.MonitorStatus
 import com.chargemonitor.ui.MainActivity
@@ -20,17 +21,17 @@ class ChargeNotificationFactory(private val context: Context) {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
         val content = when (reading.status) {
-            MonitorStatus.STARTING -> "충전 상태 확인 중"
-            MonitorStatus.DISCHARGING -> reading.powerWatts?.let { "${PowerFormatter.watts(it)} 방전 중" } ?: "방전 중"
-            MonitorStatus.CHARGING -> "${PowerFormatter.watts(reading.powerWatts)} 충전 중"
-            MonitorStatus.FULL -> "충전 완료 · ${reading.sample?.levelPercent ?: 100}%"
-            MonitorStatus.MEASUREMENT_UNAVAILABLE -> "충전 중 · 전류 측정 불가"
-            MonitorStatus.IDLE -> "충전 대기 중"
-            MonitorStatus.DISABLED -> "자동 모니터링 꺼짐"
+            MonitorStatus.STARTING -> context.getString(R.string.status_checking)
+            MonitorStatus.DISCHARGING -> reading.powerWatts?.let { context.getString(R.string.notification_discharging, PowerFormatter.watts(it)) } ?: context.getString(R.string.status_discharging)
+            MonitorStatus.CHARGING -> context.getString(R.string.notification_charging, PowerFormatter.watts(reading.powerWatts))
+            MonitorStatus.FULL -> context.getString(R.string.notification_full, reading.sample?.levelPercent ?: 100)
+            MonitorStatus.MEASUREMENT_UNAVAILABLE -> context.getString(R.string.status_unavailable)
+            MonitorStatus.IDLE -> context.getString(R.string.status_idle)
+            MonitorStatus.DISABLED -> context.getString(R.string.status_disabled)
         }
         return NotificationCompat.Builder(context, NotificationChannelManager.CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_lock_idle_charging)
-            .setContentTitle("충전 모니터")
+            .setContentTitle(context.getString(R.string.app_name))
             .setContentText(content)
             .setStyle(NotificationCompat.BigTextStyle().bigText(content))
             .setContentIntent(pendingIntent)
