@@ -20,6 +20,8 @@
     <string name="times">회</string>
     <string name="no_trend_records">트렌드 기록을 켜면 이곳에 5분 평균값이 쌓입니다.</string>
     <string name="trend_average_note">전력은 5분 단위 평균값입니다.</string>
+    <string name="trend_battery_level">배터리 잔량 %1$d%%</string>
+    <string name="trend_no_record_at_time">기록 없음</string>
     <string name="diagnostics">상세 진단</string>
     <string name="diagnostic_power" translatable="false">충전 전력</string>
     <string name="diagnostic_voltage" translatable="false">전압</string>

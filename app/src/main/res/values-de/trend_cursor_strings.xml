@@ -1,0 +1,4 @@
+<resources>
+    <string name="trend_battery_level">Akkustand %1$d%%</string>
+    <string name="trend_no_record_at_time">Kein Datensatz</string>
+</resources>

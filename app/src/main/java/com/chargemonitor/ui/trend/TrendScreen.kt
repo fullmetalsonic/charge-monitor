@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,18 +28,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chargemonitor.R
 import com.chargemonitor.data.model.DailyTrendSummary
@@ -76,6 +79,10 @@ private fun TrendContent(
     onShowNextDay: () -> Unit,
 ) {
     val summary = state.summary
+    var selectedBucket by remember(summary.date) { mutableStateOf<Int?>(null) }
+    val selectedRecord = selectedBucket?.let { bucket ->
+        summary.records.firstOrNull { TrendTimeline.bucketForTimestamp(it.capturedAtMillis) == bucket }
+    }
     Column(
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.safeDrawing)
@@ -93,7 +100,11 @@ private fun TrendContent(
         } else {
             Surface(color = SlateSurface, shape = RoundedCornerShape(24.dp)) {
                 Column(Modifier.padding(16.dp)) {
-                    BatteryFlowChart(summary.records)
+                    BatteryFlowChart(summary.records, selectedBucket) { selectedBucket = it }
+                    selectedBucket?.let { bucket ->
+                        Spacer(Modifier.height(10.dp))
+                        TrendCursorInfo(bucket, selectedRecord)
+                    }
                     Spacer(Modifier.height(4.dp))
                     DayTimelineLabels()
                     Spacer(Modifier.height(10.dp))
@@ -113,7 +124,7 @@ private fun TrendContent(
         if (summary.records.isEmpty()) {
             EmptyTrendState()
         } else {
-            PowerChart(summary.records, summary.peakWatts)
+            PowerChart(summary.records, summary.peakWatts, selectedBucket) { selectedBucket = it }
             Spacer(Modifier.height(8.dp))
             Text(stringResource(R.string.trend_average_note), color = Muted, style = MaterialTheme.typography.bodySmall)
         }
@@ -187,8 +198,13 @@ private fun EmptyTrendState() {
 }
 
 @Composable
-private fun BatteryFlowChart(records: List<TrendRecord>) {
-    Canvas(Modifier.fillMaxWidth().height(250.dp)) {
+private fun BatteryFlowChart(
+    records: List<TrendRecord>,
+    selectedBucket: Int?,
+    onBucketSelected: (Int) -> Unit,
+) {
+    val cursorInput = rememberTrendCursorInput(onBucketSelected)
+    Canvas(Modifier.fillMaxWidth().height(250.dp).then(cursorInput)) {
         val bottom = size.height - 18.dp.toPx()
         val chartHeight = bottom - 12.dp.toPx()
         val strokeWidth = max(2.dp.toPx(), size.width / DAILY_BUCKET_COUNT * 0.55f)
@@ -198,18 +214,31 @@ private fun BatteryFlowChart(records: List<TrendRecord>) {
             val color = if (record.direction == TrendDirection.CHARGING) Lime else GaugeTrack
             drawLine(color, Offset(x, bottom), Offset(x, y), strokeWidth = strokeWidth, cap = StrokeCap.Round)
         }
+        drawTrendCursor(selectedBucket, records) { record -> bottom - chartHeight * record.batteryPercent / 100f }
     }
 }
 
 @Composable
-private fun PowerChart(records: List<TrendRecord>, peakWatts: Double?) {
+private fun PowerChart(
+    records: List<TrendRecord>,
+    peakWatts: Double?,
+    selectedBucket: Int?,
+    onBucketSelected: (Int) -> Unit,
+) {
+    val cursorInput = rememberTrendCursorInput(onBucketSelected)
     Column {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(stringResource(R.string.power_watts), color = Muted, style = MaterialTheme.typography.bodyMedium)
             peakWatts?.let { Text("${stringResource(R.string.power_peak)} ${PowerFormatter.watts(it)}", color = Lime, style = MaterialTheme.typography.bodyMedium) }
         }
         Spacer(Modifier.height(8.dp))
-        Canvas(Modifier.fillMaxWidth().height(150.dp).background(SlateSurface, RoundedCornerShape(20.dp))) {
+        Canvas(
+            Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .background(SlateSurface, RoundedCornerShape(20.dp))
+                .then(cursorInput),
+        ) {
             val values = records.map { it.powerWatts ?: 0.0 }
             val scaleMax = max(30.0, values.maxOrNull() ?: 0.0)
             val bottom = size.height - 14.dp.toPx()
@@ -221,10 +250,74 @@ private fun PowerChart(records: List<TrendRecord>, peakWatts: Double?) {
                 val color = if (records[index].direction == TrendDirection.CHARGING) Lime else GaugeTrack
                 drawLine(color, Offset(x, bottom), Offset(x, y), strokeWidth = strokeWidth, cap = StrokeCap.Round)
             }
+            drawTrendCursor(selectedBucket, records) { record ->
+                record.powerWatts?.let { bottom - (it / scaleMax * chartHeight).toFloat() }
+            }
         }
         Spacer(Modifier.height(4.dp))
         DayTimelineLabels()
     }
+}
+
+@Composable
+private fun rememberTrendCursorInput(onBucketSelected: (Int) -> Unit): Modifier {
+    val latestOnBucketSelected = rememberUpdatedState(onBucketSelected)
+    fun selectAt(x: Float, width: IntSize) {
+        if (width.width > 0) {
+            latestOnBucketSelected.value(TrendTimeline.bucketForFraction(x / width.width))
+        }
+    }
+    return Modifier
+        .pointerInput(Unit) {
+            detectTapGestures { offset -> selectAt(offset.x, size) }
+        }
+        .pointerInput(Unit) {
+            detectHorizontalDragGestures(
+                onDragStart = { offset -> selectAt(offset.x, size) },
+                onHorizontalDrag = { change, _ -> selectAt(change.position.x, size) },
+            )
+        }
+}
+
+private fun DrawScope.drawTrendCursor(
+    selectedBucket: Int?,
+    records: List<TrendRecord>,
+    yForRecord: (TrendRecord) -> Float?,
+) {
+    val bucket = selectedBucket ?: return
+    val x = size.width * TrendTimeline.fractionForBucket(bucket)
+    drawLine(Lime.copy(alpha = 0.8f), Offset(x, 0f), Offset(x, size.height), strokeWidth = 1.5.dp.toPx())
+    records.firstOrNull { TrendTimeline.bucketForTimestamp(it.capturedAtMillis) == bucket }
+        ?.let(yForRecord)
+        ?.let { y -> drawCircle(Lime, radius = 4.dp.toPx(), center = Offset(x, y)) }
+}
+
+@Composable
+private fun TrendCursorInfo(selectedBucket: Int, record: TrendRecord?) {
+    Surface(color = GaugeTrack.copy(alpha = 0.45f), shape = RoundedCornerShape(14.dp)) {
+        Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp)) {
+            Text(TrendTimeline.timeLabel(selectedBucket), color = Lime, style = MaterialTheme.typography.titleSmall)
+            if (record == null) {
+                Text(stringResource(R.string.trend_no_record_at_time), color = Muted, style = MaterialTheme.typography.bodyMedium)
+            } else {
+                Text(
+                    stringResource(R.string.trend_battery_level, record.batteryPercent),
+                    color = Ink,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(cursorPowerLabel(record), color = Muted, style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+    }
+}
+
+@Composable
+private fun cursorPowerLabel(record: TrendRecord): String = when (record.direction) {
+    TrendDirection.CHARGING -> record.powerWatts?.let { stringResource(R.string.notification_charging, PowerFormatter.watts(it)) }
+        ?: stringResource(R.string.status_charging)
+    TrendDirection.DISCHARGING -> record.powerWatts?.let { stringResource(R.string.notification_discharging, PowerFormatter.watts(it)) }
+        ?: stringResource(R.string.status_discharging)
+    TrendDirection.IDLE -> stringResource(R.string.status_idle)
 }
 
 @Composable

@@ -1,0 +1,4 @@
+<resources>
+    <string name="trend_battery_level">电池剩余 %1$d%%</string>
+    <string name="trend_no_record_at_time">无记录</string>
+</resources>

@@ -1,0 +1,4 @@
+<resources>
+    <string name="trend_battery_level">बैटरी शेष %1$d%%</string>
+    <string name="trend_no_record_at_time">कोई रिकॉर्ड नहीं</string>
+</resources>
