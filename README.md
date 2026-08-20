@@ -2,9 +2,15 @@
 
 Android 14 이상에서 배터리 전압·전류를 읽어 충전·방전 전력(W)을 계산하고, 상태바·잠금화면 알림으로 표시하는 Android 앱입니다.
 
+## 실제 기기 화면
+
 <p align="center">
-  <img src="assets/readme/dashboard-discharge.png" alt="Charge Monitor discharge dashboard example" width="360" />
+  <img src="assets/readme/dashboard-discharging-device.png" alt="방전 중 7.6W 표시" width="250" />
+  <img src="assets/readme/dashboard-charging-device.png" alt="충전 중 10.3W 표시" width="250" />
+  <img src="assets/readme/dashboard-monitor-off-device.png" alt="자동 모니터링 꺼짐" width="250" />
 </p>
+
+<p align="center">방전 중 · 충전 중 · 자동 모니터링 꺼짐</p>
 
 ## 주요 기능
 
