@@ -10,30 +10,12 @@ Charge Monitor is an Android 14+ battery power monitor. It reads battery voltage
 ## 실제 기기 화면 / Real-device screens
 
 <p align="center">
-  <img src="assets/readme/dashboard-discharging-device.png" alt="Discharging at 7.6 W / 7.6 W 방전 중" width="250" />
-  <img src="assets/readme/dashboard-charging-device.png" alt="Charging at 10.3 W / 10.3 W 충전 중" width="250" />
-  <img src="assets/readme/dashboard-monitor-off-device.png" alt="Automatic monitoring off / 자동 모니터링 꺼짐" width="250" />
+  <img src="assets/readme/dashboard-v0119-current-device.png" alt="Current dashboard with automatic monitoring and trend recording settings / 자동 모니터링과 트렌드 기록 설정이 있는 최신 대시보드" width="250" />
+  <img src="assets/readme/trend-flow-v0119-current-device.png" alt="Battery flow followed by charging-power changes / 배터리 흐름 아래의 충전 전력 변화" width="250" />
+  <img src="assets/readme/trend-peaks-v0119-current-device.png" alt="Daily summary with charging and discharging peak records / 오늘의 흐름과 충전 및 방전 피크 기록" width="250" />
 </p>
 
-<p align="center">방전 중 · 충전 중 · 자동 모니터링 꺼짐<br />Discharging · Charging · Automatic monitoring off</p>
-
-## 트렌드 기록 설정 / Trend recording settings
-
-<p align="center">
-  <img src="assets/readme/trend-recording-settings-device.png" alt="Trend recording settings entry on the dashboard / 대시보드의 트렌드 기록 설정 진입" width="250" />
-  <img src="assets/readme/trend-recording-precision-device.png" alt="Select precise 1-minute averages / 정밀 1분 평균 기록 선택" width="250" />
-</p>
-
-<p align="center">기록 켜기·끄기와 설정 진입을 분리 · 표준 5분 평균 또는 정밀 1분 평균 선택<br />Separate recording on/off from settings · choose standard 5-minute or precise 1-minute averages</p>
-
-## 트렌드 기록 / Trend history
-
-<p align="center">
-  <img src="assets/readme/trend-flow-v0119-device.png" alt="Battery flow and charging-power change graph / 배터리 흐름과 충전 전력 변화 그래프" width="250" />
-  <img src="assets/readme/trend-peaks-v0119-device.png" alt="Daily summary with charging and discharging peaks / 오늘의 흐름과 충전 및 방전 피크" width="250" />
-</p>
-
-<p align="center">00~24시 배터리 흐름과 전력 변화 · 충전/방전 피크의 W, 기록 시각, 당시 잔량<br />00:00–24:00 battery flow and power changes · watts, time, and battery level for charging/discharging peaks</p>
+<p align="center">최신 대시보드 · 00~24시 배터리 흐름과 전력 변화 · 충전/방전 피크의 W·기록 시각·당시 잔량<br />Current dashboard · 00:00–24:00 battery flow and power changes · watts, time, and battery level for charging/discharging peaks</p>
 
 ## 주요 기능 / Key features
 
