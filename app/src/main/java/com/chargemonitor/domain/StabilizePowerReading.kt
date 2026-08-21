@@ -5,9 +5,13 @@ import kotlin.math.round
 class StabilizePowerReading(private val windowSize: Int = 3) {
     private val samples = ArrayDeque<Double>()
 
+    fun clear() {
+        samples.clear()
+    }
+
     fun add(value: Double?): Double? {
         if (value == null) {
-            samples.clear()
+            clear()
             return null
         }
         samples.addLast(value)
