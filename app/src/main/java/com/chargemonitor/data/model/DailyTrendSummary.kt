@@ -10,4 +10,6 @@ data class DailyTrendSummary(
     val dischargedPercent: Int,
     val averageWatts: Double?,
     val peakWatts: Double?,
+    val chargingPeak: TrendPeak?,
+    val dischargingPeak: TrendPeak?,
 )

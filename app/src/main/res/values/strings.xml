@@ -14,6 +14,10 @@
     <string name="gained">획득</string>
     <string name="discharged">방전</string>
     <string name="power_peak">전력 피크</string>
+    <string name="charging_peak">충전 피크</string>
+    <string name="discharging_peak">방전 피크</string>
+    <string name="peak_time_battery">%1$s · %2$d%%</string>
+    <string name="peak_no_record">기록 없음</string>
     <string name="power_watts">전력 (W)</string>
     <string name="times">회</string>
     <string name="no_trend_records">트렌드 기록을 켜면 이곳에 5분 평균값이 쌓입니다.</string>
