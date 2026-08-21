@@ -306,3 +306,12 @@ This file accumulates project requirements, technical decisions, and verificatio
 - Affected files: `README.md`, `docs/01_기획서.md` through `docs/05_UI_설계_기준서.md`, `docs/en/*`, GitHub repository description and topics
 - Verification: Statically check Markdown links and public-image paths, then check README, English docs, description, and topics on the public GitHub page after merge.
 - Status: complete. No app code, version, or APK asset changes.
+
+## 2026-08-21 - Replace README screens with current Fold8 captures
+
+- Category: documentation and asset change
+- Details: Remove the three older dashboard images from README and replace them with three fresh captures from `v0.1.19` installed on Fold8: the current dashboard, battery flow with power changes, and directional peak records. The first visible screenshots now show automatic monitoring, trend-recording settings, fixed 00:00–24:00 charts, and directional peaks together, reducing confusion between the public APK and README.
+- Privacy: Remove only the top status-bar and bottom navigation-bar regions from each raw capture. The public images contain no carrier, time, system status icons, battery indicator, or navigation buttons. App watt values, charts, and text are not changed.
+- Affected files: `README.md`, `assets/readme/dashboard-v0119-current-device.png`, `assets/readme/trend-flow-v0119-current-device.png`, `assets/readme/trend-peaks-v0119-current-device.png`; delete the three older public dashboard images
+- Verification: Confirmed `versionName 0.1.19` on an ADB-connected Fold8 and captured all three screens again. Visually check public PNGs for removed system information and readable dashboard, battery flow, power changes, and peak information. Recheck README paths and the public GitHub page after merge.
+- Status: complete. No app code, version, or APK asset changes; only current Fold8 captures refresh the public README assets.
