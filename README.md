@@ -17,6 +17,13 @@ Charge Monitor is an Android 14+ battery power monitor. It reads battery voltage
 
 <p align="center">최신 대시보드 · 00~24시 배터리 흐름과 전력 변화 · 충전/방전 피크의 W·기록 시각·당시 잔량<br />Current dashboard · 00:00–24:00 battery flow and power changes · watts, time, and battery level for charging/discharging peaks</p>
 
+<p align="center">
+  <img src="assets/readme/diagnostic-v0200-device-top.png" alt="Detailed diagnostics showing live battery power, voltage, current, SOC, temperature, and system battery status / 실시간 배터리 전력, 전압, 전류, SOC, 온도와 시스템 배터리 상태를 보여주는 상세 진단" width="250" />
+  <img src="assets/readme/diagnostic-v0200-device-bottom.png" alt="Detailed diagnostics showing battery health availability, cycles, remaining charge, and connection details / 건강도 제공 여부, 사이클, 남은 전하량과 연결 정보를 보여주는 상세 진단" width="250" />
+</p>
+
+<p align="center">상세 진단: SOC와 SOH를 구분하고, 시스템이 제공하는 원시 배터리 상태를 표시<br />Detailed diagnostics: separates SOC from SOH and shows system-provided raw battery data</p>
+
 ## 주요 기능 / Key features
 
 - 충전 중: 현재 충전 전력 표시<br>
@@ -37,6 +44,8 @@ Charge Monitor is an Android 14+ battery power monitor. It reads battery voltage
   Touch or drag a trend chart to inspect the battery level and power at that time
 - 충전 피크와 방전 피크에 해당 W, 기록 시각, 당시 배터리 잔량 표시<br>
   Charging and discharging peak records include watts, recorded time, and battery level
+- 상세 진단: SOC, 현재·평균 전류, 온도, 시스템 상태, 사이클, 남은 전하량, 전원 종류 등 확인. SOH 수치는 시스템이 공개할 때만 표시<br>
+  Detailed diagnostics: inspect SOC, current and average current, temperature, system status, cycles, remaining charge, and power source. SOH is shown only when the system publishes it
 - 모든 트렌드 기록은 기기 내부에만 최대 30일 보관<br>
   All trend history stays on the device for up to 30 days
 
