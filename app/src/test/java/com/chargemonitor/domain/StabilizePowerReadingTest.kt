@@ -17,4 +17,13 @@ class StabilizePowerReadingTest {
         stabilizer.add(20.0)
         assertNull(stabilizer.add(null))
     }
+
+    @Test fun `starts a fresh window after an explicit reset`() {
+        val stabilizer = StabilizePowerReading(3)
+        stabilizer.add(20.0)
+        stabilizer.add(80.0)
+        stabilizer.clear()
+
+        assertEquals(2.0, stabilizer.add(2.0)!!, 0.0)
+    }
 }

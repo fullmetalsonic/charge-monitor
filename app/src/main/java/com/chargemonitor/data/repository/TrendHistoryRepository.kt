@@ -22,6 +22,7 @@ class TrendHistoryRepository(context: Context) {
     val records: StateFlow<List<TrendRecord>> = _records.asStateFlow()
 
     fun record(reading: ChargeReading, interval: TrendRecordingInterval) {
+        if (reading.status == MonitorStatus.STARTING || reading.status == MonitorStatus.MEASUREMENT_UNAVAILABLE) return
         val sample = reading.sample ?: return
         val batteryPercent = sample.levelPercent ?: return
         synchronized(lock) {
