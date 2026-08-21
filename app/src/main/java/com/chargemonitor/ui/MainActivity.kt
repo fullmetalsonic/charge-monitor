@@ -18,6 +18,7 @@ import com.chargemonitor.ui.dashboard.DashboardScreen
 import com.chargemonitor.ui.dashboard.DashboardViewModel
 import com.chargemonitor.ui.design.ChargeMonitorTheme
 import com.chargemonitor.ui.diagnostic.DiagnosticScreen
+import com.chargemonitor.ui.diagnostic.DiagnosticViewModel
 import com.chargemonitor.ui.trend.TrendScreen
 import com.chargemonitor.ui.trend.TrendViewModel
 
@@ -35,6 +36,9 @@ class MainActivity : ComponentActivity() {
     private val trendViewModel: TrendViewModel by viewModels {
         TrendViewModel.factory(container.trendHistoryRepository, container.settingsRepository)
     }
+    private val diagnosticViewModel: DiagnosticViewModel by viewModels {
+        DiagnosticViewModel.factory(container.batteryDataSource)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,12 +51,16 @@ class MainActivity : ComponentActivity() {
                     when (screen) {
                         Screen.DASHBOARD -> DashboardScreen(
                             viewModel,
-                            onOpenDiagnostic = { screen = Screen.DIAGNOSTIC },
+                            onOpenDiagnostic = {
+                                diagnosticViewModel.refresh()
+                                screen = Screen.DIAGNOSTIC
+                            },
                             onOpenTrend = { screen = Screen.TREND },
                         )
                         Screen.DIAGNOSTIC -> {
-                            val reading by viewModel.reading.collectAsStateWithLifecycle()
-                            DiagnosticScreen(reading)
+                            val reading by diagnosticViewModel.reading.collectAsStateWithLifecycle()
+                            val isRefreshing by diagnosticViewModel.isRefreshing.collectAsStateWithLifecycle()
+                            DiagnosticScreen(reading, isRefreshing, diagnosticViewModel::refresh)
                         }
                         Screen.TREND -> TrendScreen(trendViewModel)
                     }

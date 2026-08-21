@@ -75,9 +75,11 @@ Do not put historical peaks, time-based data, or chart summaries on the dashboar
 
 ## 5. Detailed diagnostics
 
-- Purpose: quickly confirm the evidence behind a displayed value.
-- Order: charging power → voltage → current → battery → state → disclaimer.
-- Each item is one `left label / right value` row with only one divider between rows.
+- Purpose: quickly confirm the evidence behind a displayed value and the current battery condition.
+- Order: `Live measurements` (battery power, voltage, current/average current, charge level (SOC), last measured) → `Battery condition` (temperature, system status, health (SOH), cycles, remaining charge/energy, time to full) → `Connection details` (power source, technology, charging status, presence) → disclaimer.
+- Clearly separate SOC (current charge) from SOH (health relative to a new battery). Do not estimate SOH; show `Not provided by system` when Android does not publish a value.
+- Entering the screen or tapping `Refresh` reads a new system sample independently of automatic monitoring.
+- Each item is one `left label / right value` row with only one divider between rows. The screen may scroll vertically when required.
 - Do not add charts, toggles, or extra explanation cards. This screen is a measurement table.
 
 ## 6. Trend history
