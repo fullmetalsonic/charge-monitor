@@ -46,6 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chargemonitor.R
 import com.chargemonitor.data.model.DailyTrendSummary
 import com.chargemonitor.data.model.TrendDirection
+import com.chargemonitor.data.model.TrendPeak
 import com.chargemonitor.data.model.TrendRecord
 import com.chargemonitor.data.model.TrendRecordingInterval
 import com.chargemonitor.domain.TrendTimeline
@@ -57,7 +58,9 @@ import com.chargemonitor.ui.design.Lime
 import com.chargemonitor.ui.design.Muted
 import com.chargemonitor.ui.design.SlateSurface
 import com.chargemonitor.util.PowerFormatter
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.max
@@ -121,12 +124,6 @@ private fun TrendContent(
             }
         }
         Spacer(Modifier.height(26.dp))
-        Text(stringResource(R.string.today_flow), style = MaterialTheme.typography.headlineSmall)
-        Spacer(Modifier.height(18.dp))
-        SummaryRow(summary)
-        Spacer(Modifier.height(22.dp))
-        HorizontalDivider(color = Divider)
-        Spacer(Modifier.height(22.dp))
         Text(stringResource(R.string.power_change), style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(12.dp))
         if (displayRecords.isEmpty()) {
@@ -134,7 +131,6 @@ private fun TrendContent(
         } else {
             PowerChart(
                 displayRecords,
-                displayRecords.mapNotNull { it.powerWatts }.maxOrNull(),
                 selectedMinute,
             ) { selectedMinute = it }
             selectedMinute?.let { minute ->
@@ -144,6 +140,12 @@ private fun TrendContent(
             Spacer(Modifier.height(8.dp))
             Text(trendAverageNote(interval), color = Muted, style = MaterialTheme.typography.bodySmall)
         }
+        Spacer(Modifier.height(26.dp))
+        Text(stringResource(R.string.today_flow), style = MaterialTheme.typography.headlineSmall)
+        Spacer(Modifier.height(18.dp))
+        SummaryRow(summary)
+        Spacer(Modifier.height(22.dp))
+        PeakRecords(summary)
     }
 }
 
@@ -246,16 +248,12 @@ private fun BatteryFlowChart(
 @Composable
 private fun PowerChart(
     records: List<TrendRecord>,
-    peakWatts: Double?,
     selectedMinute: Int?,
     onMinuteSelected: (Int) -> Unit,
 ) {
     val cursorInput = rememberTrendCursorInput(onMinuteSelected)
     Column {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(stringResource(R.string.power_watts), color = Muted, style = MaterialTheme.typography.bodyMedium)
-            peakWatts?.let { Text("${stringResource(R.string.power_peak)} ${PowerFormatter.watts(it)}", color = Lime, style = MaterialTheme.typography.bodyMedium) }
-        }
+        Text(stringResource(R.string.power_watts), color = Muted, style = MaterialTheme.typography.bodyMedium)
         Spacer(Modifier.height(8.dp))
         Canvas(
             Modifier
@@ -397,6 +395,64 @@ private fun SummaryRow(summary: DailyTrendSummary) {
         SummaryMetric(stringResource(R.string.power_peak), summary.peakWatts?.let(PowerFormatter::watts) ?: "—", Lime)
     }
 }
+
+@Composable
+private fun PeakRecords(summary: DailyTrendSummary) {
+    HorizontalDivider(color = Divider)
+    PeakRecordRow(
+        label = stringResource(R.string.charging_peak),
+        peak = summary.chargingPeak,
+        valueColor = Lime,
+    )
+    HorizontalDivider(color = Divider)
+    PeakRecordRow(
+        label = stringResource(R.string.discharging_peak),
+        peak = summary.dischargingPeak,
+        valueColor = Ink,
+    )
+    HorizontalDivider(color = Divider)
+}
+
+@Composable
+private fun PeakRecordRow(
+    label: String,
+    peak: TrendPeak?,
+    valueColor: androidx.compose.ui.graphics.Color,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column {
+            Text(label, color = Ink, style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                peak?.let { peakMetadata(it) } ?: stringResource(R.string.peak_no_record),
+                color = Muted,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+        Text(
+            peak?.powerWatts?.let(PowerFormatter::watts) ?: "—",
+            color = valueColor,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Medium,
+        )
+    }
+}
+
+@Composable
+private fun peakMetadata(peak: TrendPeak): String = stringResource(
+    R.string.peak_time_battery,
+    Instant.ofEpochMilli(peak.capturedAtMillis)
+        .atZone(ZoneId.systemDefault())
+        .toLocalTime()
+        .format(DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())),
+    peak.batteryPercent,
+)
 
 @Composable
 private fun SummaryMetric(label: String, value: String, valueColor: androidx.compose.ui.graphics.Color = Ink) {

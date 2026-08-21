@@ -2,6 +2,7 @@ package com.chargemonitor.domain
 
 import com.chargemonitor.data.model.DailyTrendSummary
 import com.chargemonitor.data.model.TrendDirection
+import com.chargemonitor.data.model.TrendPeak
 import com.chargemonitor.data.model.TrendRecord
 import java.time.Instant
 import java.time.LocalDate
@@ -24,6 +25,21 @@ class BuildDailyTrendSummary(private val zoneId: ZoneId = ZoneId.systemDefault()
             dischargedPercent = -changes.filter { it < 0 }.sum(),
             averageWatts = watts.takeIf { it.isNotEmpty() }?.average(),
             peakWatts = watts.maxOrNull(),
+            chargingPeak = dailyRecords.peakFor(TrendDirection.CHARGING),
+            dischargingPeak = dailyRecords.peakFor(TrendDirection.DISCHARGING),
         )
     }
+
+    private fun List<TrendRecord>.peakFor(direction: TrendDirection): TrendPeak? = asSequence()
+        .filter { it.direction == direction }
+        .mapNotNull { record ->
+            record.powerWatts?.let { watts ->
+                TrendPeak(
+                    capturedAtMillis = record.capturedAtMillis,
+                    batteryPercent = record.batteryPercent,
+                    powerWatts = watts,
+                )
+            }
+        }
+        .maxByOrNull(TrendPeak::powerWatts)
 }
